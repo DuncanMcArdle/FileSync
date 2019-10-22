@@ -310,7 +310,7 @@ public class ContextualASyncTask extends AsyncTask
 			else
 			{
 				// Check if the current file already exists in the destination folder
-				DocumentFile wouldBeFile = targetLocation.findFile(file.getName());
+				DocumentFile wouldBeFile = caseInsensitiveFindFile(file.getName(), targetLocation);
 				if(wouldBeFile != null && file.length() == wouldBeFile.length())
 				{
 					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by file size), skipping...");
@@ -455,7 +455,7 @@ public class ContextualASyncTask extends AsyncTask
 			else
 			{
 				// Check if the current file already exists in the destination folder
-				DocumentFile wouldBeFile = targetFolder.findFile(file.getName());
+				DocumentFile wouldBeFile = caseInsensitiveFindFile(file.getName(), targetFolder);
 				if(wouldBeFile != null && file.length() == wouldBeFile.length())
 				{
 					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by file size), skipping...");
@@ -565,6 +565,18 @@ public class ContextualASyncTask extends AsyncTask
 				callingActivityInterface.OnSynchronisationProgress(totalFiles, filesProcessed, totalBytes, bytesProcessed);
 			}
 		}
+	}
+
+	public DocumentFile caseInsensitiveFindFile(String fileName, DocumentFile folder)
+	{
+		for (DocumentFile document : folder.listFiles())
+		{
+			if (fileName.toUpperCase().equals(document.getName().toUpperCase()))
+			{
+				return document;
+			}
+		}
+		return null;
 	}
 
 	// MainActivity interface
