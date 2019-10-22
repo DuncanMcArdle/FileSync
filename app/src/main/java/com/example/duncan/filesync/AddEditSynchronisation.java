@@ -63,10 +63,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 	TextInputLayout targetFolderEditTextContainer;
 	Button targetBrowseButton;
 	CheckBox deleteTargetContents;
-	Spinner duplicateFileCheckMethod;
-	ImageView duplicateFileCheckMethodInfoButton;
-	LinearLayout duplicateFileCheckMethodInfoBox;
-	ImageView getDuplicateFileCheckMethodInfoBoxCloseImage;
 	Button addSynchronisationButton;
 
 	@Override
@@ -119,10 +115,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 
 		// Additional options
 		deleteTargetContents = findViewById(R.id.additionalOptionDeleteTargetContents);
-		duplicateFileCheckMethod = findViewById(R.id.additionalOptionDuplicateFileCheckMethod);
-		duplicateFileCheckMethodInfoButton = findViewById(R.id.additionalOptionDuplicateFileCheckInfoButton);
-		duplicateFileCheckMethodInfoBox = findViewById(R.id.additionalOptionDuplicateFileCheckInfoBox);
-		getDuplicateFileCheckMethodInfoBoxCloseImage = findViewById(R.id.additionalOptionDuplicateFileCheckInfoBoxCloseImage);
 
 		// Submit button
 		addSynchronisationButton = findViewById(R.id.addSynchronisationSubmit);
@@ -299,7 +291,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 
 			// Populate the additional options
 			deleteTargetContents.setChecked(addSynchronisationIntent.getBooleanExtra("DeleteTargetContents", false));
-			duplicateFileCheckMethod.setSelection(addSynchronisationIntent.getIntExtra("DuplicateFileCheckMethod", 0));
 
 			// Populate the required variables
 			modifyingSynchronisation = addSynchronisationIntent.getIntExtra("ID", -1);
@@ -475,19 +466,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 			}
 		});
 
-		// When the info button on the duplicate file check method option is clicked
-		View.OnClickListener showHideDuplicateFileCheckMethodInfoBoxListener = new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				// Show / hide the associated info box
-				duplicateFileCheckMethodInfoBox.setVisibility(duplicateFileCheckMethodInfoBox.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-			}
-		};
-		duplicateFileCheckMethodInfoButton.setOnClickListener(showHideDuplicateFileCheckMethodInfoBoxListener);
-		getDuplicateFileCheckMethodInfoBoxCloseImage.setOnClickListener(showHideDuplicateFileCheckMethodInfoBoxListener);
-
 		// When the "Add synchronisation" button is clicked
 		addSynchronisationButton.setOnClickListener(new View.OnClickListener()
 		{
@@ -548,7 +526,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 					activityResult.putExtra("TargetSMBShare", targetSMBSpinner.getSelectedItem().toString());
 					activityResult.putExtra("TargetFolder", (targetTypeRadioGroup.getCheckedRadioButtonId() != R.id.targetTypeNetwork ? targetFolder.toString() : targetFolderEditText.getText().toString()));
 					activityResult.putExtra("DeleteTargetContents", deleteTargetContents.isChecked());
-					activityResult.putExtra("DuplicateFileCheckMethod", duplicateFileCheckMethod.getSelectedItemPosition());
 					setResult(RESULT_OK, activityResult);
 
 					// Notify the user

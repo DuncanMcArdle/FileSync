@@ -8,7 +8,6 @@
     <string name="title_activity_smbbrowser">SMB browser</string>
 
     <!-- Add / Edit synchronisation -->
-    <string name="duplicate_file_check_method_info">During a synchronisation, if the file about to be transferred already exists in the destination, we need to check whether the two files are exactly the same (and avoid the unnecessary transfer if so). This can either by done very quickly (by simply checking its name and the size of the file), or more thoroughly (by hashing both files and comparing the results).</string>
 
     <!-- Manage SMB shares -->
     <string name="manage_smb_shares_title">Manage SMB shares</string>

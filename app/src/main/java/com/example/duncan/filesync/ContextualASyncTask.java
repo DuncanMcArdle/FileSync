@@ -26,7 +26,6 @@ public class ContextualASyncTask extends AsyncTask
 	String targetFolder;
 	NtlmPasswordAuthentication targetCredentials;
 	boolean deleteTargetContents;
-	boolean checkMD5;
 
 	// Synchronisation tracking variables
 	int totalFolders = 0;
@@ -37,13 +36,9 @@ public class ContextualASyncTask extends AsyncTask
 	int bytesTransferred = 0;
 	int bytesProcessed = 0;
 
-	// Duplicate file check variables
-	int DUPLICATE_FILE_CHECK_METHOD_NAME_SIZE = 0;
-	int DUPLICATE_FILE_CHECK_METHOD_HASH = 1;
-
 	public ContextualInterface callingActivityInterface;
 
-	public ContextualASyncTask(Context context, String sourceFolderInput, NtlmPasswordAuthentication sourceCredentialsInput, String targetFolderInput, NtlmPasswordAuthentication targetCredentialsInput, boolean targetDeleteTargetContents, int targetDuplicateFileCheckMethod)
+	public ContextualASyncTask(Context context, String sourceFolderInput, NtlmPasswordAuthentication sourceCredentialsInput, String targetFolderInput, NtlmPasswordAuthentication targetCredentialsInput, boolean targetDeleteTargetContents)
 	{
 		contextRef = context;
 
@@ -53,22 +48,11 @@ public class ContextualASyncTask extends AsyncTask
 		targetFolder = targetFolderInput;
 		targetCredentials = targetCredentialsInput;
 		deleteTargetContents = targetDeleteTargetContents;
-		//duplicateFileCheckMethod = targetDuplicateFileCheckMethod;
-		checkMD5 = (targetDuplicateFileCheckMethod == DUPLICATE_FILE_CHECK_METHOD_HASH);
 	}
 
 	@Override
 	protected Object doInBackground(Object[] objects)
 	{
-		if(!checkMD5)
-		{
-			Log.i("STORAGE", "Checking based on file name and size");
-		}
-		else
-		{
-			Log.i("STORAGE", "Checking based on hash");
-		}
-
 		try
 		{
 			// Check if the the "delete target contents" flag is set
@@ -327,9 +311,9 @@ public class ContextualASyncTask extends AsyncTask
 			{
 				// Check if the current file already exists in the destination folder
 				DocumentFile wouldBeFile = targetLocation.findFile(file.getName());
-				if(wouldBeFile != null && ((checkMD5 && MD5.calculateFileMD5(file.getUri(), contextRef).equals(MD5.calculateFileMD5(wouldBeFile.getUri(),contextRef))) || (!checkMD5 && file.length() == wouldBeFile.length())))
+				if(wouldBeFile != null && file.length() == wouldBeFile.length())
 				{
-					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), skipping...");
+					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by file size), skipping...");
 
 					// Increment the number of bytes processed
 					bytesProcessed += file.length();
@@ -339,7 +323,7 @@ public class ContextualASyncTask extends AsyncTask
 					// Check if a file exists with the same name
 					if (wouldBeFile != null)
 					{
-						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), deleting...");
+						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by file size), deleting...");
 
 						// Delete the file
 						wouldBeFile.delete();
@@ -405,9 +389,9 @@ public class ContextualASyncTask extends AsyncTask
 				SmbFile wouldBeFile = new SmbFile(targetFolder+file.getName(), targetCredentials);
 
 				// Check if the current file already exists in the destination folder
-				if(wouldBeFile.exists() && ((checkMD5 && MD5.calculateFileMD5(file.getUri(), contextRef).equals(MD5.calculateSMBMD5(wouldBeFile))) || (!checkMD5 && file.length() == wouldBeFile.length())))
+				if(wouldBeFile.exists() && file.length() == wouldBeFile.length())
 				{
-					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), skipping...");
+					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by file size), skipping...");
 
 					// Increment the number of bytes processed
 					bytesProcessed += file.length();
@@ -421,7 +405,7 @@ public class ContextualASyncTask extends AsyncTask
 					}
 					else
 					{
-						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), deleting...");
+						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by file size), deleting...");
 						wouldBeFile.delete();
 					}
 
@@ -470,13 +454,11 @@ public class ContextualASyncTask extends AsyncTask
 			}
 			else
 			{
-				Log.i("STORAGE", "About to calculate MD5 for "+file.getName());
-
 				// Check if the current file already exists in the destination folder
 				DocumentFile wouldBeFile = targetFolder.findFile(file.getName());
-				if(wouldBeFile != null && ((checkMD5 && MD5.calculateSMBMD5(file).equals(MD5.calculateFileMD5(wouldBeFile.getUri(),contextRef))) || (!checkMD5 && file.length() == wouldBeFile.length())))
+				if(wouldBeFile != null && file.length() == wouldBeFile.length())
 				{
-					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), skipping...");
+					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by file size), skipping...");
 
 					// Increment the number of bytes processed
 					bytesProcessed += file.length();
@@ -485,7 +467,7 @@ public class ContextualASyncTask extends AsyncTask
 				{
 					if (wouldBeFile != null)
 					{
-						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), deleting...");
+						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by file size), deleting...");
 						wouldBeFile.delete();
 					}
 					else
@@ -550,9 +532,9 @@ public class ContextualASyncTask extends AsyncTask
 				SmbFile wouldBeFile = new SmbFile(targetFolder+file.getName(), targetCredentials);
 
 				// Check if the current file already exists in the destination folder
-				if(wouldBeFile.exists() && ((checkMD5 && MD5.calculateSMBMD5(file).equals(MD5.calculateSMBMD5(wouldBeFile))) || (!checkMD5 && file.length() == wouldBeFile.length())))
+				if(wouldBeFile.exists() && file.length() == wouldBeFile.length())
 				{
-					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), skipping...");
+					Log.i("STORAGE", "File '" + file.getName() + "' already exists and is identical (checked by file size), skipping...");
 
 					// Increment the number of bytes processed
 					bytesProcessed += file.length();
@@ -566,7 +548,7 @@ public class ContextualASyncTask extends AsyncTask
 					}
 					else
 					{
-						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by "+(checkMD5 ? "MD5" : "file size") +"), deleting...");
+						Log.i("STORAGE", "File '" + file.getName() + "' already exists but is NOT identical (checked by file size), deleting...");
 						wouldBeFile.delete();
 					}
 

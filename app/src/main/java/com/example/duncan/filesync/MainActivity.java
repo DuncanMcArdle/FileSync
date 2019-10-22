@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					newSynchronisationJob.put("TargetSMBShare", resultData.getStringExtra("TargetSMBShare"));
 					newSynchronisationJob.put("TargetFolder", resultData.getStringExtra("TargetFolder"));
 					newSynchronisationJob.put("DeleteTargetContents", resultData.getBooleanExtra("DeleteTargetContents", false));
-					newSynchronisationJob.put("DuplicateFileCheckMethod", resultData.getIntExtra("DuplicateFileCheckMethod", 0));
 					synchronisationArray.put(newSynchronisationJob);
 
 					// Sort the synchronisation array
@@ -194,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						newSynchronisationJob.put("TargetSMBShare", resultData.getStringExtra("TargetSMBShare"));
 						newSynchronisationJob.put("TargetFolder", resultData.getStringExtra("TargetFolder"));
 						newSynchronisationJob.put("DeleteTargetContents", resultData.getBooleanExtra("DeleteTargetContents", false));
-						newSynchronisationJob.put("DuplicateFileCheckMethod", resultData.getIntExtra("DuplicateFileCheckMethod", 0));
 
 						Log.i("STORAGE", "JSON2: " + newSynchronisationJob.toString());
 
@@ -219,231 +217,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 				// Update the ListView
 				synchronisationListAdapter.notifyDataSetChanged();
 				LoadSynchronisations();
-			}
-		}
-	}
-
-	// Function to check if a file / folder exists
-	public boolean FileFolderExists(Uri subTree, String path)
-	{
-		// Assemble the file path to appended to the URI tree
-		String filePath = DocumentsContract.getTreeDocumentId(subTree) + "/" + path;
-
-		// Assemble the full Document File reference
-		Uri childrenUri = DocumentsContract.buildDocumentUriUsingTree(subTree, filePath);
-		DocumentFile targetFileFolder = DocumentFile.fromSingleUri(MainActivity.this, childrenUri);
-
-		// Check if the file / folder in question exists
-		if (targetFileFolder != null && targetFileFolder.exists())
-		{
-			return true;
-		}
-		return false;
-	}
-
-	// Function to delete all files and folders underneath a DocumentFile
-	public void DeleteRecursively(DocumentFile targetLocation)
-	{
-		// Loop through the files & folders in the target location
-		for (DocumentFile file : targetLocation.listFiles())
-		{
-			// Check if the file / folder is a folder
-			if (file.isDirectory())
-			{
-				// If so, delete its contents
-				DeleteRecursively(file);
-
-				// Then delete the folder
-				file.delete();
-			}
-			else
-			{
-				// Otherwise, just delete the file
-				file.delete();
-			}
-		}
-	}
-
-	// Function to remove all files and folders from one DocumentFile not found in another
-	public void RemoveDifferentFileFolders(DocumentFile sourceLocation, DocumentFile targetLocation)
-	{
-		// Loop through the files & folders in the target location
-		for (DocumentFile file : targetLocation.listFiles())
-		{
-			// Check if the file / folder is a folder
-			if (file.isDirectory())
-			{
-				// Check if the target folder also exists in the source folder
-				DocumentFile wouldBeSourceFolder = sourceLocation.findFile(file.getName());
-				if (wouldBeSourceFolder != null)
-				{
-					Log.i("STORAGE", "Folder '" + file.getName() + "' exists in the source, checking contents...");
-					RemoveDifferentFileFolders(wouldBeSourceFolder, file);
-				}
-				else
-				{
-					// Recursively delete the target folder and its contents
-					Log.i("STORAGE", "Folder '" + file.getName() + "' does not exist in the source, deleting...");
-					DeleteRecursively(file);
-					file.delete();
-				}
-			}
-			else
-			{
-				// Check if the target file exists in the source folder
-				DocumentFile wouldBeSourceFile = sourceLocation.findFile(file.getName());
-				if (wouldBeSourceFile != null)
-				{
-					Log.i("STORAGE", "File '" + file.getName() + "' exists in the source, checking MD5...");
-
-                    /*// Check if the file's MD5s match
-                    if(MD5.checkMD5(MD5.calculateMD5(file.getUri(), this), wouldBeSourceFile.getUri(),this))
-                    {
-                        // If so, leave the file as it is
-                        Log.i("STORAGE", "MD5s match, skipping file.");
-                        continue;
-                    }
-                    else*/
-					{
-						// If not, delete the target file
-						Log.i("STORAGE", "MD5s DO NOT match, deleting file.");
-						file.delete();
-					}
-				}
-				else
-				{
-					// If the target file does not exist in the source location, delete it
-					Log.i("STORAGE", "File '" + file.getName() + "' does not exist in source, removing...");
-					file.delete();
-				}
-			}
-		}
-	}
-
-	// Function to duplicate all files and folders from one DocumentFile to another
-	public void DuplicateFileFolder(DocumentFile sourceLocation, DocumentFile targetLocation)
-	{
-		Log.i("STORAGE", "Checking " + sourceLocation.getUri() + " against " + targetLocation.getUri());
-
-		// Loop through the files & folders in the source location
-		for (DocumentFile file : sourceLocation.listFiles())
-		{
-			Log.i("STORAGE", "Checking " + file.getName());
-
-			// Obtain the target URI
-			Uri newFileURI = Uri.parse(targetLocation.getUri() + "/" + file.getName());
-
-			// Check if the file / folder is a folder
-			if (file.isDirectory())
-			{
-				// Check if the current folder already exists in the destination folder
-				DocumentFile wouldBeFolder = targetLocation.findFile(file.getName());
-				if (wouldBeFolder != null)
-				{
-					Log.i("STORAGE", "Folder '" + file.getName() + "' already exists, skipping creation...");
-				}
-				else
-				{
-					Log.i("STORAGE", "Folder '" + file.getName() + "' does not yet exist, creating...");
-
-					// Create the folder
-					wouldBeFolder = targetLocation.createDirectory(file.getName());
-					newFileURI = wouldBeFolder.getUri();
-					Log.i("STORAGE", "Passing in URI: " + newFileURI);
-					Log.i("STORAGE", "Passing in: " + wouldBeFolder.getUri());
-				}
-
-				// Then re-run the function on that directory
-				DuplicateFileFolder(file, wouldBeFolder);
-			}
-			else
-			{
-				// Check if the current file already exists in the destination folder
-				DocumentFile wouldBeFile = targetLocation.findFile(file.getName());
-				if (wouldBeFile != null)
-				{
-					Log.i("STORAGE", "File '" + file.getName() + "' already exists, checking MD5...");
-
-					Log.i("STORAGE", "targetLocation URI: " + targetLocation.getUri());
-					Log.i("STORAGE", "wouldBeFile URI: " + wouldBeFile.getUri());
-
-                    /*// Check if the file's MD5s match
-                    if(MD5.checkMD5(MD5.calculateMD5(file.getUri(), this), wouldBeFile.getUri(),this))
-                    {
-                        Log.i("STORAGE", "MD5s match, skipping file.");
-                        continue;
-                    }
-                    else*/
-					{
-						Log.i("STORAGE", "MD5s DO NOT match, deleting file.");
-						wouldBeFile.delete();
-					}
-				}
-				else
-				{
-					Log.i("STORAGE", "File '" + file.getName() + "' does not exist, creating...");
-				}
-
-                /*// Check if the file in question already exists in the target directory
-                if(FileFolderExists(targetLocation.getUri(), file.getName()))
-                {
-                    Log.i("STORAGE", "File '"+file.getName()+"' already exists");
-
-                    DocumentFile targetFile = DocumentFile.fromSingleUri(this, Uri.parse(targetLocation+"/"+file.getName()));
-                    Log.i("STORAGE", "Type: "+targetFile.getType()+". URI: "+targetFile.getUri());
-
-                    try
-                    {
-                        BufferedInputStream is = new BufferedInputStream(this.getContentResolver().openInputStream(Uri.parse(sourceLocation+"%2F"+file.getName())));
-                    }
-                    catch (FileNotFoundException e)
-                    {
-                        e.printStackTrace();
-                    }
-
-                    Log.i("STORAGE", "Source MD5: "+MD5.calculateMD5(Uri.parse(sourceLocation+"/"+file.getName()), this));
-                    Log.i("STORAGE", "Target MD5: "+MD5.calculateMD5(Uri.parse(targetLocation+"/"+file.getName()), this));
-                }
-                else*/
-				{
-					// Initialise the input and output streams used for copying
-					BufferedInputStream bis = null;
-					BufferedOutputStream bos = null;
-
-					// Get the source file's type
-					String sourceFileType = MimeTypeMap.getSingleton().getExtensionFromMimeType(this.getContentResolver().getType(file.getUri()));
-
-					// Create the new (empty) file
-					DocumentFile newFile = targetLocation.createFile(sourceFileType, file.getName());
-
-					// Duplicate the file bit by bit
-					try
-					{
-						bis = new BufferedInputStream(this.getContentResolver().openInputStream(file.getUri()));
-						bos = new BufferedOutputStream(this.getContentResolver().openOutputStream(newFile.getUri()));
-						byte[] buf = new byte[1024];
-						bis.read(buf);
-
-						do
-						{
-							bos.write(buf);
-						}
-						while (bis.read(buf) != -1);
-					} catch (IOException e)
-					{
-						e.printStackTrace();
-					} finally
-					{
-						try
-						{
-							if (bis != null) bis.close();
-							if (bos != null) bos.close();
-						} catch (IOException e)
-						{
-							e.printStackTrace();
-						}
-					}
-				}
 			}
 		}
 	}
@@ -611,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						String sourceFolder = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? targetSynchronisation.getString("SourceFolder") : GetSMBAddress(targetSynchronisation.getString("SourceSMBShare")) + targetSynchronisation.getString("SourceFolder"));
 						String targetFolder = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? targetSynchronisation.getString("TargetFolder") : GetSMBAddress(targetSynchronisation.getString("TargetSMBShare")) + targetSynchronisation.getString("TargetFolder"));
 
-						synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, targetSynchronisation.getBoolean("DeleteTargetContents"), targetSynchronisation.getInt("DuplicateFileCheckMethod"));
+						synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, targetSynchronisation.getBoolean("DeleteTargetContents"));
 						synchronisationTask.callingActivityInterface = MainActivity.this;
 						synchronisationTask.execute();
 
@@ -645,7 +418,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						editSynchronisationIntent.putExtra("TargetSMBShare", synchronisationObject.getString("TargetSMBShare"));
 						editSynchronisationIntent.putExtra("TargetFolder", synchronisationObject.getString("TargetFolder"));
 						editSynchronisationIntent.putExtra("DeleteTargetContents", synchronisationObject.getBoolean("DeleteTargetContents"));
-						editSynchronisationIntent.putExtra("DuplicateFileCheckMethod", synchronisationObject.getInt("DuplicateFileCheckMethod"));
 
 						// Start the Add / Edit synchronisation activity
 						startActivityForResult(editSynchronisationIntent, REQUEST_CODE_EDIT_SYNCHRONISATION);
