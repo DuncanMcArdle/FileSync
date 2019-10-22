@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:compat="http://schemas.android.com/apk/res-auto">
+    <item android:title="Manage SMB shares"
+        android:id="@+id/main_activity_menu_manage_smb_shares"
+        compat:showAsAction="never" />
+</menu>

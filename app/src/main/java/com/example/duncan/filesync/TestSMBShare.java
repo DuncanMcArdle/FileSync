@@ -1,0 +1,95 @@
+package com.example.duncan.filesync;
+
+import android.content.Context;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v4.provider.DocumentFile;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
+import android.widget.Button;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+
+import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.SmbAuthException;
+import jcifs.smb.SmbException;
+import jcifs.smb.SmbFile;
+import jcifs.smb.SmbFileInputStream;
+
+public class TestSMBShare extends AsyncTask
+{
+    Context callingContext;
+    String SMBShareURL;
+    NtlmPasswordAuthentication SMBShareAuthentication;
+    String testResult;
+
+    public interface TestResponse
+	{
+		void TestCompleted(String result);
+	}
+
+	public TestResponse delegate = null;
+
+    // Initialisation
+    public TestSMBShare(Context inputContext, String inputSMBShareURL, NtlmPasswordAuthentication inputSMBShareAuthentication, TestResponse delegate)
+    {
+		// Store the passed in details
+		callingContext = inputContext;
+		SMBShareURL = "smb://"+inputSMBShareURL;
+		SMBShareAuthentication = inputSMBShareAuthentication;
+		this.delegate = delegate;
+	}
+
+    @Override
+    protected Object doInBackground(Object[] objects)
+    {
+		try
+        {
+        	SmbFile testFile = new SmbFile(SMBShareURL, SMBShareAuthentication);
+        	testFile.setConnectTimeout(5000);
+        	testFile.connect();
+			testResult = "SUCCESS";
+			Log.i("STORAGE", "Connected successfully.");
+		}
+        catch(SmbAuthException e)
+		{
+			testResult = "AUTHENTICATION";
+			e.printStackTrace();
+		}
+		catch(SmbException e)
+		{
+			testResult = "SMB_EXCEPTION";
+			e.printStackTrace();
+		}
+		catch(MalformedURLException e)
+		{
+			testResult = "MALFORMED_URL_EXCEPTION";
+			e.printStackTrace();
+		}
+		catch(UnknownHostException e)
+		{
+			testResult = "UNKNOWN_HOST_EXCEPTION";
+			e.printStackTrace();
+		}
+        catch (Exception e)
+        {
+			testResult = "UNKNOWN_EXCEPTION";
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+	@Override
+	protected void onPostExecute(Object o)
+	{
+		delegate.TestCompleted(testResult);
+	}
+}
