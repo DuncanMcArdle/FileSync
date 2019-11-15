@@ -221,8 +221,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 					}
 
 					// Show a successful loader
-					loader.UpdateTitle("Deleted successfully.");
-					loader.ShowLoaderWithIcon(R.drawable.ic_done_black_24dp);
+					loader.ShowLoaderWithIcon("Deleted successfully.", R.drawable.ic_done_black_24dp, null);
 					loader.UpdateCloseButton(false, null, null);
 
 					// Prepare the new job's details to be returned
@@ -458,8 +457,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 			{
 				// Notify the user
 				Loader loader = new Loader(this, getLayoutInflater());
-				loader.UpdateTitle(modifyingSMBShare == -1 ? "Added successfully." : "Updated successfully.");
-				loader.ShowLoaderWithIcon(R.drawable.ic_done_black_24dp);
+				loader.ShowLoaderWithIcon(modifyingSMBShare == -1 ? "Added successfully." : "Updated successfully.", R.drawable.ic_done_black_24dp, null);
 				loader.UpdateCloseButton(false, null, null);
 
 				// Prepare the new share's details to be returned

@@ -115,14 +115,7 @@ public class ContextualASyncTask extends AsyncTask
 		}
 		catch (Exception exception)
 		{
-			if(exception.getMessage().equals("write failed: ENOSPC (No space left on device)"))
-			{
-				Log.i("STORAGE", "OUT OF SPAAAAACEE");
-			}
-			else
-			{
-				exception.printStackTrace();
-			}
+			callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
 		}
 		return null;
 	}
@@ -584,5 +577,6 @@ public class ContextualASyncTask extends AsyncTask
 	{
 		public void OnSynchronisationProgress(int totalFiles, int filesProcessed, int totalBytes, int bytesProcessed);
 		public void OnSynchronisationComplete(int totalFiles, int filesTransferred, int totalBytes, int bytesTransferred);
+		public void OnSynchronisationFailed(String error);
 	}
 }

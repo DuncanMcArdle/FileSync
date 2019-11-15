@@ -339,8 +339,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 
 				// Notify the user
 				Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
-				loader.UpdateTitle("Deleted successfully.");
-				loader.ShowLoaderWithIcon(R.drawable.ic_done_black_24dp);
+				loader.ShowLoaderWithIcon("Deleted successfully.", R.drawable.ic_done_black_24dp, null);
 				loader.UpdateCloseButton(false, null, null);
 
 				// Execute with a 1 second delay
@@ -530,8 +529,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 
 					// Notify the user
 					Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
-					loader.UpdateTitle(modifyingSynchronisation == -1 ? "Added successfully." : "Updated successfully.");
-					loader.ShowLoaderWithIcon(R.drawable.ic_done_black_24dp);
+					loader.ShowLoaderWithIcon(modifyingSynchronisation == -1 ? "Added successfully." : "Updated successfully.", R.drawable.ic_done_black_24dp, null);
 					loader.UpdateCloseButton(false, null, null);
 
 					// Execute with a 1 second delay

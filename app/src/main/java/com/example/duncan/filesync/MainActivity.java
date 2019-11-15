@@ -287,6 +287,38 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		});
 	}
 
+	// Function called when a synchronisation fails to coplete
+	@Override
+	public void OnSynchronisationFailed(final String error)
+	{
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				// Switch based on the cause of the exception
+				switch(error)
+				{
+					case "write failed: ENOSPC (No space left on device)":
+					{
+						syncLoader.ShowLoaderWithIcon("Out of space", R.drawable.ic_highlight_off_black_24dp, "There was insufficient space remaining in the destination. Please free up some space and try again.");
+						break;
+					}
+					default:
+					{
+						syncLoader.ShowLoaderWithIcon("Unknown error", R.drawable.ic_highlight_off_black_24dp, "An unknown error occurred during the synchronisation.");
+					}
+				}
+
+				// Set the popup's close button
+				syncLoader.UpdateCloseButton(true, "Close", null);
+			}
+		});
+
+		// Cancel the task
+		synchronisationTask.cancel(true);
+	}
+
 	// Function called when a synchronisation completes
 	@Override
 	public void OnSynchronisationComplete(int totalFiles, int filesTransferred, int totalBytes, int bytesTransferred)

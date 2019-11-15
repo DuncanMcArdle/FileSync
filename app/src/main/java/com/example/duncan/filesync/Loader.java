@@ -51,6 +51,7 @@ public class Loader
 		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
 
 		// Show the spinner section
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.VISIBLE);
@@ -64,6 +65,7 @@ public class Loader
 		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
 
 		// Obtain a reference to the progress bar elements
 		ProgressBar progressBar = alertDialog.findViewById(R.id.loaderProgressBar);
@@ -86,6 +88,7 @@ public class Loader
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
 
 		// Show the summary section
 		TextView progressBarSummaryFilesProcessed = alertDialog.findViewById(R.id.loaderFileTransferSummaryFilesProcessed);
@@ -103,6 +106,7 @@ public class Loader
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
 
 		// Show the summary section
 		TextView loaderHTMLSummaryText = alertDialog.findViewById(R.id.loaderHTMLSummaryText);
@@ -111,18 +115,33 @@ public class Loader
 	}
 
 	// Show the loader with an icon
-	public void ShowLoaderWithIcon(int iconResourceID)
+	public void ShowLoaderWithIcon(String titleText, int iconResourceID, String descriptionText)
 	{
+		// Update the title
+		UpdateTitle(titleText);
+
 		// Hide the other sections
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
 
-		// Show the icon
+		// Set and show the icon
 		ImageView progressBarIcon = alertDialog.findViewById(R.id.loaderIcon);
 		progressBarIcon.setImageResource(iconResourceID);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.VISIBLE);
+
+		// Set and show / Hide the description
+		TextView descriptionTextView = alertDialog.findViewById(R.id.loaderDescriptionText);
+		if(descriptionText != null)
+		{
+			descriptionTextView.setText(descriptionText);
+			descriptionTextView.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			descriptionTextView.setVisibility(View.GONE);
+		}
 	}
 
 	// Update the loader's close button
@@ -132,8 +151,16 @@ public class Loader
 		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setVisibility(showCloseButton ? View.VISIBLE : View.GONE);
 
 		// Update the close button
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(newText);
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(closeButtonListener);
+		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(newText == null ? "Close" : newText);
+		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(closeButtonListener == null ? new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				// If no listener was supplied, just hide the loader
+				HideLoader();
+			}
+		} : closeButtonListener);
 	}
 
 	// Function that converts bytes into a human readable format
