@@ -292,7 +292,7 @@ public class ContextualASyncTask extends AsyncTask
 			if(file.isDirectory())
 			{
 				// Check if the current folder already exists in the destination folder
-				DocumentFile wouldBeFolder = targetLocation.findFile(file.getName());
+				DocumentFile wouldBeFolder = caseInsensitiveFindFile(file.getName(), targetLocation);
 				if(wouldBeFolder != null)
 				{
 					Log.i("STORAGE", "Folder '" + file.getName() + "' already exists, skipping creation...");
@@ -437,7 +437,7 @@ public class ContextualASyncTask extends AsyncTask
 			{
 				// Check if the source folder already exists in the target folder
 				String folderName = file.getName().substring(0, (file.getName().length() -1));
-				DocumentFile wouldBeFolder = targetFolder.findFile(folderName);
+				DocumentFile wouldBeFolder = caseInsensitiveFindFile(folderName, targetFolder);
 				if(wouldBeFolder != null)
 				{
 					Log.i("STORAGE", "Folder '" + folderName + "' already exists, skipping creation...");
