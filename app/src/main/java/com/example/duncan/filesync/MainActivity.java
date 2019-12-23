@@ -5,29 +5,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +37,16 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	SharedPreferences.Editor myPrefsEdit;
 	CustomAdapter synchronisationListAdapter;
 	ContextualASyncTask synchronisationTask;
+	long synchronisationStart;
+
+	// Variables for storing the current synchronisation's details
+	NtlmPasswordAuthentication sourceAuthentication;
+	NtlmPasswordAuthentication targetAuthentication;
+	String sourceFolder;
+	String targetFolder;
+	int deletionPolicy;
+	int filesToSynchronise;
+	long dataToSynchronise;
 
 	// Request codes
 	int REQUEST_CODE_ADD_SYNCHRONISATION = 1000;
@@ -62,6 +65,21 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		setContentView(R.layout.activity_main);
 		android.support.v7.widget.Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
+
+		/*ArrayList<AnalysedFile> fileList;
+		fileList = new ArrayList<AnalysedFile>();
+		fileList.add(new AnalysedFile("Some kind of file", "/Some/Path/", 2000));
+		fileList.add(new AnalysedFile("Second file", "/Some/Other/Path/", 4000));
+		fileList.add(new AnalysedFile("Some kind of file", "/Some/Path/", 2000));
+		fileList.add(new AnalysedFile("Second file", "/Some/Other/Path/", 4000));
+		fileList.add(new AnalysedFile("Some kind of file", "/Some/Path/", 2000));
+		fileList.add(new AnalysedFile("Second file", "/Some/Other/Path/", 4000));
+
+		ArrayList<AnalysedFile> emptyFileList;
+		emptyFileList = new ArrayList<AnalysedFile>();
+
+		Loader syncLoader = new Loader(this, getLayoutInflater());
+		syncLoader.ShowLoaderWithFileTransferSummary(false, 1000, 1000, 1000, fileList, emptyFileList, emptyFileList);*/
 
 		// Initialise shared preferences
 		myPreferences = getSharedPreferences("FileSync", 0);
@@ -144,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					newSynchronisationJob.put("TargetType", resultData.getStringExtra("TargetType"));
 					newSynchronisationJob.put("TargetSMBShare", resultData.getStringExtra("TargetSMBShare"));
 					newSynchronisationJob.put("TargetFolder", resultData.getStringExtra("TargetFolder"));
-					newSynchronisationJob.put("DeleteTargetContents", resultData.getBooleanExtra("DeleteTargetContents", false));
+					newSynchronisationJob.put("DeletionPolicy", resultData.getIntExtra("DeletionPolicy",0));
 					synchronisationArray.put(newSynchronisationJob);
 
 					// Sort the synchronisation array
@@ -192,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						newSynchronisationJob.put("TargetType", resultData.getStringExtra("TargetType"));
 						newSynchronisationJob.put("TargetSMBShare", resultData.getStringExtra("TargetSMBShare"));
 						newSynchronisationJob.put("TargetFolder", resultData.getStringExtra("TargetFolder"));
-						newSynchronisationJob.put("DeleteTargetContents", resultData.getBooleanExtra("DeleteTargetContents", false));
+						newSynchronisationJob.put("DeletionPolicy", resultData.getIntExtra("DeletionPolicy", 0));
 
 						Log.i("STORAGE", "JSON2: " + newSynchronisationJob.toString());
 
@@ -255,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 
 	// Function called when a synchronisation completes
 	@Override
-	public void OnSynchronisationProgress(final int totalFiles, final int filesProcessed, final int totalBytes, final int bytesProcessed)
+	public void OnSynchronisationProgress(final int filesProcessed, final int bytesProcessed, final String currentFileName)
 	{
 		runOnUiThread(new Runnable()
 		{
@@ -266,11 +284,11 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 				syncLoader.UpdateTitle("Synchronising...");
 
 				// Calculate the percentage complete
-				int percentageComplete = (int) (((double) bytesProcessed / (double) totalBytes) * 100);
+				int percentageComplete = (int) (((double) bytesProcessed / (double) dataToSynchronise) * 100);
 
 				// Update the loader
-				syncLoader.ShowLoaderWithProgressBar(percentageComplete, filesProcessed, totalFiles);
-				syncLoader.UpdateCloseButton(true, "Cancel", new View.OnClickListener()
+				syncLoader.ShowLoaderWithProgressBar(percentageComplete, filesProcessed, filesToSynchronise, currentFileName);
+				syncLoader.UpdateButtons(false, null, null, true, "Cancel", new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
@@ -311,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 				}
 
 				// Set the popup's close button
-				syncLoader.UpdateCloseButton(true, "Close", null);
+				syncLoader.UpdateButtons(false, null, null, true, "Close", null);
 			}
 		});
 
@@ -329,10 +347,10 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		syncLoader.UpdateTitle("Synchronised");
 
 		// Show the summary
-		syncLoader.ShowLoaderWithFileTransferSummary(totalFiles, (totalFiles - filesTransferred), bytesTransferred);
+		//syncLoader.ShowLoaderWithFileTransferSummary(totalFiles, (totalFiles - filesTransferred), bytesTransferred);
 
 		// Update the loader's close button
-		syncLoader.UpdateCloseButton(true, "Close", new View.OnClickListener()
+		syncLoader.UpdateButtons(false, null, null, true, "Close", new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
@@ -389,16 +407,16 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					{
 						// Show a loader
 						syncLoader = new Loader(MainActivity.this, getLayoutInflater());
-						syncLoader.UpdateTitle("Initialising...");
+						syncLoader.UpdateTitle("Estimating changes...");
 						syncLoader.ShowLoaderWithSpinner();
-						syncLoader.UpdateCloseButton(true, "Cancel", new View.OnClickListener()
+						syncLoader.UpdateButtons(false, null, null, true, "Cancel", new View.OnClickListener()
 						{
 							@Override
 							public void onClick(View v)
 							{
 								// Stop the ongoing task
 								synchronisationTask.cancel(true);
-								Log.i("STORAGE", "User cancelled the synchronisation during synchronisation.");
+								Log.i("STORAGE", "User cancelled the synchronisation during estimation.");
 
 								// Close the loader
 								syncLoader.HideLoader();
@@ -410,15 +428,18 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 
 						Log.i("STORAGE", "JSON contents: '" + targetSynchronisation + "'.");
 
-						NtlmPasswordAuthentication sourceAuthentication = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? null : GetSMBCredentials(targetSynchronisation.getString("SourceSMBShare")));
-						NtlmPasswordAuthentication targetAuthentication = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? null : GetSMBCredentials(targetSynchronisation.getString("TargetSMBShare")));
+						sourceAuthentication = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? null : GetSMBCredentials(targetSynchronisation.getString("SourceSMBShare")));
+						targetAuthentication = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? null : GetSMBCredentials(targetSynchronisation.getString("TargetSMBShare")));
 
-						String sourceFolder = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? targetSynchronisation.getString("SourceFolder") : GetSMBAddress(targetSynchronisation.getString("SourceSMBShare")) + targetSynchronisation.getString("SourceFolder"));
-						String targetFolder = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? targetSynchronisation.getString("TargetFolder") : GetSMBAddress(targetSynchronisation.getString("TargetSMBShare")) + targetSynchronisation.getString("TargetFolder"));
+						sourceFolder = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? targetSynchronisation.getString("SourceFolder") : GetSMBAddress(targetSynchronisation.getString("SourceSMBShare")) + targetSynchronisation.getString("SourceFolder"));
+						targetFolder = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? targetSynchronisation.getString("TargetFolder") : GetSMBAddress(targetSynchronisation.getString("TargetSMBShare")) + targetSynchronisation.getString("TargetFolder"));
 
-						synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, targetSynchronisation.getBoolean("DeleteTargetContents"));
+						deletionPolicy = targetSynchronisation.getInt("DeletionPolicy");
+
+						synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, deletionPolicy, false);
 						synchronisationTask.callingActivityInterface = MainActivity.this;
 						synchronisationTask.execute();
+						synchronisationStart = System.currentTimeMillis() / 1000L;
 
 					} catch (Exception e)
 					{
@@ -449,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						editSynchronisationIntent.putExtra("TargetType", synchronisationObject.getString("TargetType"));
 						editSynchronisationIntent.putExtra("TargetSMBShare", synchronisationObject.getString("TargetSMBShare"));
 						editSynchronisationIntent.putExtra("TargetFolder", synchronisationObject.getString("TargetFolder"));
-						editSynchronisationIntent.putExtra("DeleteTargetContents", synchronisationObject.getBoolean("DeleteTargetContents"));
+						editSynchronisationIntent.putExtra("DeletionPolicy", synchronisationObject.getInt("DeletionPolicy"));
 
 						// Start the Add / Edit synchronisation activity
 						startActivityForResult(editSynchronisationIntent, REQUEST_CODE_EDIT_SYNCHRONISATION);
@@ -506,7 +527,8 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					return SMBShares.getJSONObject(i).getString("Address");
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -548,5 +570,83 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 
 		// Return the sorted list of JSON objects, converted back into a JSON Array
 		return new JSONArray(jsonList);
+	}
+
+	public void NewOnSyncComplete(boolean performTransfer, long addedFileSize, ArrayList<AnalysedFile> addedFileList, long updatedFileSize, ArrayList<AnalysedFile> updatedFileList, long deletedFileSize, ArrayList<AnalysedFile> deletedFileList)
+	{
+		Log.i("STORAGE", "NewOnSyncComplete");
+
+		// Check if a transfer was being performed
+		if(!performTransfer)
+		{
+			// Store the total number and size of files to be synchronised
+			filesToSynchronise = (addedFileList.size() + updatedFileList.size());
+			dataToSynchronise = (addedFileSize + updatedFileSize);
+
+			// Update the title
+			syncLoader.UpdateTitle("Estimated changes");
+
+			// Create a listener for when the user clicks "Perform transfer"
+			View.OnClickListener performTransferListener = new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					// Show a loader
+					syncLoader.UpdateTitle("Synchronising...");
+					syncLoader.ShowLoaderWithSpinner();
+					syncLoader.UpdateButtons(false, null, null, true, "Cancel", new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							// Stop the ongoing task
+							synchronisationTask.cancel(true);
+							Log.i("STORAGE", "User cancelled the synchronisation during transfer.");
+
+							// Close the loader
+							syncLoader.HideLoader();
+						}
+					});
+
+					synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, deletionPolicy, true);
+					synchronisationTask.callingActivityInterface = MainActivity.this;
+					synchronisationTask.execute();
+					synchronisationStart = System.currentTimeMillis() / 1000L;
+				}
+			};
+
+			// Update the buttons
+			syncLoader.UpdateButtons(true, "Perform transfer", performTransferListener, true, "Cancel", null);
+		}
+		else
+		{
+			// Update the title
+			syncLoader.UpdateTitle("Synchronisation complete");
+
+			// Update the buttons
+			syncLoader.UpdateButtons(false, null, null, true, "Close", null);
+		}
+
+		// Show a summary
+		syncLoader.ShowLoaderWithFileTransferSummary(performTransfer, (int) ((System.currentTimeMillis() / 1000L) - synchronisationStart), (addedFileList.size() + updatedFileList.size()), (addedFileSize + updatedFileSize), addedFileList, updatedFileList, deletedFileList);
+
+		/*// Check if only an initial estimation was being conducted
+		if(!performTransfer)
+		{
+			// Show the summary of the estimation
+			Loader syncLoader = new Loader(this, getLayoutInflater());
+			syncLoader.ShowLoaderWithFileTransferSummary(false, 1000, 1000, 1000, fileList, emptyFileList, emptyFileList);
+		}
+		else
+		{
+			// Show the summary of the synchronisation
+		}
+
+		Log.i("STORAGE", "Initial analysis complete. "+deletedFileList.size()+" files (totalling "+deletedFileSize+") to delete: ");
+		for(int i = 0; i < deletedFileList.size(); i++)
+		{
+			Log.i("STORAGE", deletedFileList.get(i).fileName+" / "+deletedFileList.get(i).filePath+" / "+deletedFileList.get(i).fileSize);
+		}*/
 	}
 }

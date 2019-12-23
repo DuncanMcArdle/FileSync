@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -62,7 +62,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 	EditText targetFolderEditText;
 	TextInputLayout targetFolderEditTextContainer;
 	Button targetBrowseButton;
-	CheckBox deleteTargetContents;
+	Spinner deletionPolicySpinner;
 	Button addSynchronisationButton;
 
 	@Override
@@ -114,7 +114,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		targetBrowseButton = findViewById(R.id.targetBrowse);
 
 		// Additional options
-		deleteTargetContents = findViewById(R.id.additionalOptionDeleteTargetContents);
+		deletionPolicySpinner = findViewById(R.id.additionalOptionDeletionPolicy);
 
 		// Submit button
 		addSynchronisationButton = findViewById(R.id.addSynchronisationSubmit);
@@ -290,7 +290,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 			}
 
 			// Populate the additional options
-			deleteTargetContents.setChecked(addSynchronisationIntent.getBooleanExtra("DeleteTargetContents", false));
+			deletionPolicySpinner.setSelection(addSynchronisationIntent.getIntExtra("DeletionPolicy", 0));
 
 			// Populate the required variables
 			modifyingSynchronisation = addSynchronisationIntent.getIntExtra("ID", -1);
@@ -340,7 +340,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 				// Notify the user
 				Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
 				loader.ShowLoaderWithIcon("Deleted successfully.", R.drawable.ic_done_black_24dp, null);
-				loader.UpdateCloseButton(false, null, null);
+				loader.UpdateButtons(false, null, null, false, null, null);
 
 				// Execute with a 1 second delay
 				final Handler handler = new Handler();
@@ -524,13 +524,13 @@ public class AddEditSynchronisation extends AppCompatActivity
 					activityResult.putExtra("TargetType", (targetTypeRadioGroup.getCheckedRadioButtonId() == R.id.targetTypeLocal ? "LOCAL" : "SMB"));
 					activityResult.putExtra("TargetSMBShare", targetSMBSpinner.getSelectedItem().toString());
 					activityResult.putExtra("TargetFolder", (targetTypeRadioGroup.getCheckedRadioButtonId() != R.id.targetTypeNetwork ? targetFolder.toString() : targetFolderEditText.getText().toString()));
-					activityResult.putExtra("DeleteTargetContents", deleteTargetContents.isChecked());
+					activityResult.putExtra("DeletionPolicy", deletionPolicySpinner.getSelectedItemPosition());
 					setResult(RESULT_OK, activityResult);
 
 					// Notify the user
 					Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
 					loader.ShowLoaderWithIcon(modifyingSynchronisation == -1 ? "Added successfully." : "Updated successfully.", R.drawable.ic_done_black_24dp, null);
-					loader.UpdateCloseButton(false, null, null);
+					loader.UpdateButtons(false, null, null, false, null, null);
 
 					// Execute with a 1 second delay
 					final Handler handler = new Handler();
@@ -545,6 +545,21 @@ public class AddEditSynchronisation extends AppCompatActivity
 						}
 					}, 1000);
 				}
+			}
+		});
+
+		// When the "info" button on the deletion policy is clicked
+		final TextView deletionPolicyInfoButton = findViewById(R.id.additionalOptionDeletionPolicyInfoButton);
+		deletionPolicyInfoButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				// Show a modal
+				Loader deletionPolicyInfoLoader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
+				deletionPolicyInfoLoader.UpdateTitle("Deletion policy");
+				deletionPolicyInfoLoader.ShowLoaderWithHTMLSummary(Html.fromHtml("<p><b>Don't delete anything (add / update only)</b><br />Files and folders will be synchronised to the target folder. No other files or folders in the target folder will be deleted.</p><br /><p><b>Perfect copy (delete extra files & folders)</b><br />After synchronising all files and folders from the source to the destination, any other files and folders found only in the destination folder will be removed.</p>"));
+				deletionPolicyInfoLoader.UpdateButtons(false, null, null,true, "Close", null);
 			}
 		});
 	}

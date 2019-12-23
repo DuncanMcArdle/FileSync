@@ -13,25 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
 
 public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.TestResponse
 {
@@ -189,7 +176,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 							// Show an unsuccessful loader
 							loader.UpdateTitle("Delete failed.");
 							loader.ShowLoaderWithHTMLSummary(Html.fromHtml("Cannot delete SMB share as it is in use as the source for the synchronisation '"+synchronisationArray.getJSONObject(i).getString("Title")+"'"));
-							loader.UpdateCloseButton(true, "Close", new View.OnClickListener()
+							loader.UpdateButtons(false, null, null, true, "Close", new View.OnClickListener()
 							{
 								@Override
 								public void onClick(View v)
@@ -207,7 +194,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 							// Show an unsuccessful loader
 							loader.UpdateTitle("Delete failed.");
 							loader.ShowLoaderWithHTMLSummary(Html.fromHtml("Cannot delete SMB share as it is in use as the target for the synchronisation '"+synchronisationArray.getJSONObject(i).getString("Title")+"'"));
-							loader.UpdateCloseButton(true, "Close", new View.OnClickListener()
+							loader.UpdateButtons(false, null, null, true, "Close", new View.OnClickListener()
 							{
 								@Override
 								public void onClick(View v)
@@ -222,7 +209,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 
 					// Show a successful loader
 					loader.ShowLoaderWithIcon("Deleted successfully.", R.drawable.ic_done_black_24dp, null);
-					loader.UpdateCloseButton(false, null, null);
+					loader.UpdateButtons(false, null, null, false, null, null);
 
 					// Prepare the new job's details to be returned
 					Intent activityResult = new Intent();
@@ -274,7 +261,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 					testSMBShareLoader = new Loader(AddEditSMBShare.this, getLayoutInflater());
 					testSMBShareLoader.ShowLoaderWithSpinner();
 					testSMBShareLoader.UpdateTitle("Testing SMB share...");
-					testSMBShareLoader.UpdateCloseButton(false, null, null);
+					testSMBShareLoader.UpdateButtons(false, null, null, false, null, null);
 
                 	// Disable the form's inputs and buttons
 					getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -458,7 +445,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 				// Notify the user
 				Loader loader = new Loader(this, getLayoutInflater());
 				loader.ShowLoaderWithIcon(modifyingSMBShare == -1 ? "Added successfully." : "Updated successfully.", R.drawable.ic_done_black_24dp, null);
-				loader.UpdateCloseButton(false, null, null);
+				loader.UpdateButtons(false, null, null, false, null, null);
 
 				// Prepare the new share's details to be returned
 				Intent activityResult = new Intent();

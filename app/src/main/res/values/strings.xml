@@ -20,9 +20,9 @@
     <string name="add_edit_share_submit_button_edit">Update share</string>
 
     <!-- Duplicate file check options -->
-    <string-array name="add_edit_synchronisation_duplicate_file_check_options">
-        <item name="add_edit_synchronisation_duplicate_file_check_name_and_size">Very fast</item>
-        <item name="add_edit_synchronisation_duplicate_file_check_hash">Very slow</item>
+    <string-array name="add_edit_synchronisation_deletion_policy_options">
+        <item name="add_edit_synchronisation_deletion_policy_perfect_copy">Perfect copy (default)</item>
+        <item name="add_edit_synchronisation_deletion_policy_dont_delete">Don\'t delete anything</item>
     </string-array>
 
 </resources>

@@ -4,11 +4,19 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import java.net.URLDecoder;
+import java.util.ArrayList;
 
 public class Loader
 {
@@ -17,8 +25,20 @@ public class Loader
 	Context context;
 	AlertDialog alertDialog;
 
+	// Titles
+	TextView addedFilesTitle;
+	TextView updatedFilesTitle;
+	TextView deletedFilesTitle;
+
+	// List views
+	ListView addedFilesListViewShow;
+	ListView updatedFilesListViewShow;
+	ListView deletedFilesListViewShow;
+
 	public Loader(Context passedInContext, LayoutInflater passedInLayoutInflater)
 	{
+		Log.i("STORAGE", "Loader called");
+
 		context = passedInContext;
 		layoutInflater = passedInLayoutInflater;
 		alertDialogBuilder = new AlertDialog.Builder(context);
@@ -33,6 +53,55 @@ public class Loader
 		alertDialog.show();
 
 		//alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "HUHWHAT", (DialogInterface.OnClickListener) null);
+
+		// Add listeners for the expansion buttons on transfer summaries
+		TextView showFilesAdded = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
+		TextView showFilesUpdated = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
+		TextView showFilesDeleted = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
+		View.OnClickListener showHideFilesListener = new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View clickedView)
+			{
+				// Targets
+				TextView targetTextView = (TextView) clickedView;
+				ListView targetListView = null;
+
+				switch(clickedView.getId())
+				{
+					case R.id.loaderSummaryFilesAddedShow:
+					{
+						targetListView = addedFilesListViewShow;
+						break;
+					}
+					case R.id.loaderSummaryFilesUpdatedShow:
+					{
+						targetListView = updatedFilesListViewShow;
+						break;
+					}
+					case R.id.loaderSummaryFilesDeletedShow:
+					{
+						targetListView = deletedFilesListViewShow;
+						break;
+					}
+				}
+
+				// Show / Hide the target ListView (and update the associated button)
+				targetTextView.setText(targetListView.getVisibility() == View.VISIBLE ? "(show)" : "(hide)");
+				targetListView.setVisibility(targetListView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+			}
+		};
+		showFilesAdded.setOnClickListener(showHideFilesListener);
+		showFilesUpdated.setOnClickListener(showHideFilesListener);
+		showFilesDeleted.setOnClickListener(showHideFilesListener);
+
+		// Obtain references to the listviews and their titles
+		addedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
+		addedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesAddedListView);
+		updatedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
+		updatedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedListView);
+		deletedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
+		deletedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedListView);
 	}
 
 	// Update the loader's title
@@ -48,7 +117,7 @@ public class Loader
 	{
 		// Hide the other sections
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
-		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
@@ -58,11 +127,11 @@ public class Loader
 	}
 
 	// Update the loader's progress bar
-	public void ShowLoaderWithProgressBar(int progress, int filesProcessed, int totalFiles)
+	public void ShowLoaderWithProgressBar(int progress, int filesProcessed, int totalFiles, String currentFileName)
 	{
 		// Hide the other sections
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.GONE);
-		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
@@ -71,18 +140,22 @@ public class Loader
 		ProgressBar progressBar = alertDialog.findViewById(R.id.loaderProgressBar);
 		TextView progressBarPercentage = alertDialog.findViewById(R.id.loaderProgressBarPercentage);
 		TextView progressBarFileNumber = alertDialog.findViewById(R.id.loaderProgressBarFileNumber);
+		TextView progressBarFileName = alertDialog.findViewById(R.id.loaderProgressBarFileName);
 
 		// Update the progress bar elements
 		progressBar.setProgress(progress);
 		progressBarPercentage.setText(progress+"%");
 		progressBarFileNumber.setText("File: "+(filesProcessed + 1)+" of "+totalFiles);
+		progressBarFileName.setText(currentFileName == null ? "" : currentFileName);
 		progressBar.setVisibility(View.VISIBLE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.VISIBLE);
 	}
 
 	// Show the summary section
-	public void ShowLoaderWithFileTransferSummary(int totalFiles, int totalFilesSkipped, int totalDataTransferred)
+	public void ShowLoaderWithFileTransferSummary(boolean performTransfer, int timeTaken, int filesTransferred, long dataTransferred, ArrayList<AnalysedFile> addedFileList, ArrayList<AnalysedFile> updatedFileList, ArrayList<AnalysedFile> deletedFileList)
 	{
+		Log.i("STORAGE", "ShowLoaderWithFileTransferSummary called");
+
 		// Hide the other sections
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
@@ -90,12 +163,92 @@ public class Loader
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
 
+		// Show / Hide the "Time taken" section
+		LinearLayout timeTakenSection = alertDialog.findViewById(R.id.loaderSummaryTimeTakenSection);
+		timeTakenSection.setVisibility(performTransfer ? View.VISIBLE : View.GONE);
+
+		// Obtain a reference to the various labels
+		TextView filesTransferredLabel = alertDialog.findViewById(R.id.loaderSummaryFilesTransferredLabel);
+		TextView dataTransferredLabel = alertDialog.findViewById(R.id.loaderSummaryDataTransferredLabel);
+		TextView filesAddedLabel = alertDialog.findViewById(R.id.loaderSummaryFilesAddedLabel);
+		TextView filesUpdatedLabel = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedLabel);
+		TextView filesDeletedLabel = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedLabel);
+
+		// Update the labels
+		filesTransferredLabel.setText(performTransfer ? "Files transferred:" : "Files to transfer:");
+		dataTransferredLabel.setText(performTransfer ? "Data transferred:" : "Data to transfer:");
+		filesAddedLabel.setText(performTransfer ? "Files added:" : "Files to add:");
+		filesUpdatedLabel.setText(performTransfer ? "Files updated:" : "Files to update:");
+		filesDeletedLabel.setText(performTransfer ? "Files deleted" : "Files to delete:");
+
+		// Populate the results
+		TextView timeTakenTextView = alertDialog.findViewById(R.id.loaderSummaryTimeTaken);
+		timeTakenTextView.setText(MakeSecondsReadable(timeTaken));
+		TextView filesTransferredTextView = alertDialog.findViewById(R.id.loaderSummaryFilesTransferred);
+		filesTransferredTextView.setText(String.format("%,d", filesTransferred));
+		TextView dataTransferredTextView = alertDialog.findViewById(R.id.loaderSummaryDataTransferred);
+		dataTransferredTextView.setText(HumanReadableByteCount(dataTransferred, true));
+		TextView filesAddedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesAddedNumber);
+		filesAddedTextView.setText(String.format("%,d", addedFileList.size()));
+		TextView filesUpdatedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedNumber);
+		filesUpdatedTextView.setText(String.format("%,d", updatedFileList.size()));
+		TextView filesDeletedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedNumber);
+		filesDeletedTextView.setText(String.format("%,d", deletedFileList.size()));
+
+		// Minimise the file lists
+		// Show / Hide the target ListView (and update the associated button)
+
+		addedFilesListViewShow.setVisibility(View.GONE);
+		updatedFilesListViewShow.setVisibility(View.GONE);
+		deletedFilesListViewShow.setVisibility(View.GONE);
+		addedFilesTitle.setText("(show)");
+		updatedFilesTitle.setText("(show)");
+		deletedFilesTitle.setText("(show)");
+
+		// Check if any files were added
+		if(addedFileList.size() > 0)
+		{
+			// Populate the added files list
+			FileListAdapter fileListAdapter = new FileListAdapter(alertDialog.getContext(), addedFileList);
+			addedFilesListViewShow.setAdapter(fileListAdapter);
+		}
+		else
+		{
+			// Hide the "(show)" / "(hide)" button
+			TextView showFilesAddedButton = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
+			showFilesAddedButton.setVisibility(View.GONE);
+		}
+
+		// Check if any files were updated
+		if(updatedFileList.size() > 0)
+		{
+			// Populate the added files list
+			FileListAdapter fileListAdapter = new FileListAdapter(alertDialog.getContext(), updatedFileList);
+			updatedFilesListViewShow.setAdapter(fileListAdapter);
+		}
+		else
+		{
+			// Hide the "(show)" / "(hide)" button
+			TextView showFilesUpdatedButton = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
+			showFilesUpdatedButton.setVisibility(View.GONE);
+		}
+
+		// Check if any files were deleted
+		if(deletedFileList.size() > 0)
+		{
+			// Populate the added files list
+			FileListAdapter fileListAdapter = new FileListAdapter(alertDialog.getContext(), deletedFileList);
+			deletedFilesListViewShow.setAdapter(fileListAdapter);
+		}
+		else
+		{
+			// Hide the "(show)" / "(hide)" button
+			TextView showFilesDeletedButton = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
+			showFilesDeletedButton.setVisibility(View.GONE);
+		}
+
 		// Show the summary section
-		TextView progressBarSummaryFilesProcessed = alertDialog.findViewById(R.id.loaderFileTransferSummaryFilesProcessed);
-		progressBarSummaryFilesProcessed.setText(String.format("%,d", totalFiles)+ (totalFilesSkipped > 0 ? " ("+String.format("%,d", totalFilesSkipped)+" files skipped)" : ""));
-		TextView progressBarSummaryDataTransferred = alertDialog.findViewById(R.id.loaderFileTransferSummaryDataTransferred);
-		progressBarSummaryDataTransferred.setText(HumanReadableByteCount(totalDataTransferred, true));
-		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.VISIBLE);
+		alertDialog.findViewById(R.id.loaderSummaryArea).setVisibility(View.VISIBLE);
 	}
 
 	// Show the summary section
@@ -105,7 +258,7 @@ public class Loader
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderIcon).setVisibility(View.GONE);
-		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderDescriptionText).setVisibility(View.GONE);
 
 		// Show the summary section
@@ -123,7 +276,7 @@ public class Loader
 		// Hide the other sections
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
-		alertDialog.findViewById(R.id.loaderFileTransferSummaryArea).setVisibility(View.GONE);
+		alertDialog.findViewById(R.id.loaderSummaryArea).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderHTMLSummaryText).setVisibility(View.GONE);
 
 		// Set and show the icon
@@ -145,22 +298,38 @@ public class Loader
 	}
 
 	// Update the loader's close button
-	public void UpdateCloseButton(boolean showCloseButton, String newText, View.OnClickListener closeButtonListener)
+	public void UpdateButtons(boolean showPrimaryButton, String primaryButtonText, View.OnClickListener primaryButtonListener, boolean showSecondaryButton, String secondaryButtonText, View.OnClickListener secondaryButtonListener)
 	{
-		// Show / hide the close button
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setVisibility(showCloseButton ? View.VISIBLE : View.GONE);
-
-		// Update the close button
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(newText == null ? "Close" : newText);
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(closeButtonListener == null ? new View.OnClickListener()
+		// Check if the primary button should be shown
+		if(showPrimaryButton)
 		{
-			@Override
-			public void onClick(View v)
+			// Update the primary button's text
+			alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(primaryButtonText);
+
+			// Set the primary button's listener
+			alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(primaryButtonListener);
+		}
+
+		// Check if the secondary button should be shown
+		if(showSecondaryButton)
+		{
+			// Update the secondary button's text (default to "close")
+			alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(secondaryButtonText == null ? "Close" : secondaryButtonText);
+
+			// Set the secondary button's listener (default to just hide the loader)
+			alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(secondaryButtonListener == null ? new View.OnClickListener()
 			{
-				// If no listener was supplied, just hide the loader
-				HideLoader();
-			}
-		} : closeButtonListener);
+				@Override
+				public void onClick(View v)
+				{
+					HideLoader();
+				}
+			} : secondaryButtonListener);
+		}
+
+		// Show / Hide both buttons
+		alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setVisibility(showPrimaryButton? View.VISIBLE : View.GONE);
+		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setVisibility(showSecondaryButton ? View.VISIBLE : View.GONE);
 	}
 
 	// Function that converts bytes into a human readable format
@@ -173,9 +342,91 @@ public class Loader
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
+	// Function that converts sections into a human readable string
+	public static String MakeSecondsReadable(int seconds)
+	{
+		int sec = seconds % 60;
+		int min = (seconds / 60)%60;
+		int hours = (seconds/60)/60;
+
+		if(hours > 0)
+		{
+			return hours+" hours"+(min > 0 ? " and "+min+" minutes" : "");
+		}
+		else if(min > 0)
+		{
+			return min+" minutes"+(sec > 0 ? " and "+sec+" seconds" : "");
+		}
+		else
+		{
+			return seconds+" seconds";
+		}
+	}
+
 	public void HideLoader()
 	{
 		alertDialog.hide();
+	}
+
+	class FileListAdapter extends BaseAdapter
+	{
+		private Context context; //context
+		private ArrayList<AnalysedFile> files; //data source of the list adapter
+
+		// Constructor
+		FileListAdapter(Context context, ArrayList<AnalysedFile> files)
+		{
+			this.context = context;
+			this.files = files;
+		}
+
+		@Override
+		public int getCount()
+		{
+			return this.files.size();
+		}
+
+		@Override
+		public Object getItem(int position)
+		{
+			return files.get(position);
+		}
+
+		@Override
+		public long getItemId(int position)
+		{
+			return position;
+		}
+
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent)
+		{
+			// Inflate the layout for each list item
+			if (convertView == null)
+			{
+					convertView = LayoutInflater.from(context).
+					inflate(R.layout.file_list_item, parent, false);
+			}
+
+
+
+			AnalysedFile currentFile = (AnalysedFile) getItem(position);
+			TextView fileNumber = (TextView) convertView.findViewById(R.id.fileNumber);
+			TextView fileName = (TextView) convertView.findViewById(R.id.fileName);
+
+			// URL decode the file's path
+			String decodedPath = URLDecoder.decode(currentFile.filePath);
+
+			// Obtain the final segment of the URI
+			String finalPathSegment = decodedPath.substring(decodedPath.lastIndexOf(":") + 1);
+
+			Log.i("STORAGE", "Final path segment: "+finalPathSegment);
+			Log.i("STORAGE", "File name: "+currentFile.fileName);
+			fileNumber.setText((position + 1)+". ");
+			fileName.setText(finalPathSegment+"/"+currentFile.fileName+" ("+(currentFile.isAFolder ? "folder" : HumanReadableByteCount(currentFile.fileSize, true))+")");
+
+			return convertView;
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout android:layout_width="match_parent"
-    android:layout_height="100pt"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -13,9 +13,212 @@
         android:textSize="12pt"
         />
 
+    <LinearLayout android:id="@+id/loaderSummaryArea"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout android:id="@+id/loaderSummaryTimeTakenSection"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Time taken:" />
+
+            <TextView android:id="@+id/loaderSummaryTimeTaken"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:text="14 seconds" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/loaderSummaryFilesTransferredLabel"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Files transferred:" />
+
+            <TextView android:id="@+id/loaderSummaryFilesTransferred"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:text="1,234" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/loaderSummaryDataTransferredLabel"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Data transferred:" />
+
+            <TextView android:id="@+id/loaderSummaryDataTransferred"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:text="12.3mb" />
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/loaderSummaryFilesAddedSection"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/loaderSummaryFilesAddedLabel"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Files added:" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView android:id="@+id/loaderSummaryFilesAddedNumber"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="123" />
+
+                <TextView android:id="@+id/loaderSummaryFilesAddedShow"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/lightBlue"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="(show)" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ListView android:id="@+id/loaderSummaryFilesAddedListView"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_height="100dp" />
+
+        <LinearLayout android:id="@+id/loaderSummaryFilesUpdatedSection"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/loaderSummaryFilesUpdatedLabel"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Files updated" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView android:id="@+id/loaderSummaryFilesUpdatedNumber"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="456" />
+
+                <TextView android:id="@+id/loaderSummaryFilesUpdatedShow"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/lightBlue"
+                    android:text="(show)" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ListView android:id="@+id/loaderSummaryFilesUpdatedListView"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_height="100dp" />
+
+        <LinearLayout android:id="@+id/loaderSummaryFilesDeletedSection"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView android:id="@+id/loaderSummaryFilesDeletedLabel"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Files deleted:" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView android:id="@+id/loaderSummaryFilesDeletedNumber"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="123" />
+
+                <TextView android:id="@+id/loaderSummaryFilesDeletedShow"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/lightBlue"
+                    android:text="(show)" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ListView android:id="@+id/loaderSummaryFilesDeletedListView"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_height="100dp" />
+
+    </LinearLayout>
+
     <ProgressBar android:id="@+id/loaderSpinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:padding="15dp" />
 
     <LinearLayout android:id="@+id/loaderProgressBarArea"
@@ -25,7 +228,7 @@
 
         <ProgressBar android:id="@+id/loaderProgressBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:max="100"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:padding="15dp" />
@@ -52,50 +255,26 @@
                 android:layout_gravity="right" />
 
         </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout android:id="@+id/loaderFileTransferSummaryArea"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="right"
-            android:paddingRight="2dp"
-            android:layout_weight="1">
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="Files processed:" />
-
-            <TextView
                 android:layout_width="wrap_content"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:paddingRight="5dp"
+                android:text="Current file:" />
+
+            <TextView android:id="@+id/loaderProgressBarFileName"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="Data transferred:" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="left"
-            android:paddingLeft="2dp"
-            android:layout_weight="1">
-
-            <TextView android:id="@+id/loaderFileTransferSummaryFilesProcessed"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView android:id="@+id/loaderFileTransferSummaryDataTransferred"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:text="someFile.jpg" />
 
         </LinearLayout>
 
