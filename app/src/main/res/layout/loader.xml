@@ -247,12 +247,26 @@
                 android:layout_weight="1"
                 android:layout_gravity="left" />
 
-            <TextView android:id="@+id/loaderProgressBarFileNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
+            <LinearLayout android:orientation="horizontal"
                 android:layout_weight="1"
-                android:layout_gravity="right" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="textEnd"
+                    android:textStyle="bold"
+                    android:text="File:" />
+
+                <TextView android:id="@+id/loaderProgressBarFileNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:text="1 of 10"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -263,17 +277,11 @@
             android:paddingRight="15dp"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:textAlignment="textEnd"
-                android:textStyle="bold"
-                android:paddingRight="5dp"
-                android:text="Current file:" />
-
             <TextView android:id="@+id/loaderProgressBarFileName"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:textStyle="italic"
+                android:textAlignment="textEnd"
                 android:text="someFile.jpg" />
 
         </LinearLayout>

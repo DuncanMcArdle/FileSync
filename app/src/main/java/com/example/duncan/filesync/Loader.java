@@ -145,7 +145,7 @@ public class Loader
 		// Update the progress bar elements
 		progressBar.setProgress(progress);
 		progressBarPercentage.setText(progress+"%");
-		progressBarFileNumber.setText("File: "+(filesProcessed + 1)+" of "+totalFiles);
+		progressBarFileNumber.setText((filesProcessed + 1)+" of "+totalFiles);
 		progressBarFileName.setText(currentFileName == null ? "" : currentFileName);
 		progressBar.setVisibility(View.VISIBLE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.VISIBLE);

@@ -71,60 +71,108 @@ public class ContextualASyncTask extends AsyncTask
 	@Override
 	protected Object doInBackground(Object[] objects)
 	{
-		try
+		// Test access to the synchronisation source
+		if(!TestAccess(globalSourceCredentials, globalSourceFolder, false))
 		{
-
-			addedFileList = new ArrayList<AnalysedFile>();
-			updatedFilesList = new ArrayList<AnalysedFile>();
-			deletedFileList = new ArrayList<AnalysedFile>();
-
-			// Perform / estimate target deletion (if required)
-			// Loop through all source files and folders
-			// Compare files with target to estimate / perform transfer
-			// (optional) Loop through all target files and folders
-			// (optional) Delete files / folders only required in the destination
-
-			Log.i("STORAGE", "Calling SynchroniseFolders with "+globalTargetFolder);
-			SynchroniseFolders(globalSourceCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalSourceFolder)),  globalSourceFolder, globalSourceCredentials, globalTargetCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalTargetFolder)), globalTargetFolder, globalTargetCredentials, performTransfer);
-
-			/*// Check if the the "delete target contents" flag is set
-			if (deleteTargetContents)
-			{
-				// Determine whether the target folder is an SMB share or not
-				if (targetCredentials == null)
-				{
-					AnalyseLocalFolder(DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)), deletedFileSize, deletedFileList);
-				}
-				else
-				{
-					Log.i("STORAGE", "perofminr ganalysis");
-					// Analyse SMB folder
-					AnalyseSMBFolder("smb://" + targetFolder + "/", targetCredentials, deletedFileSize, deletedFileList);
-				}
-			}*/
-
-
-		/*try
+			callingActivityInterface.OnSynchronisationFailed("SOURCE_ACCESS");
+		}
+		else if(!TestAccess(globalTargetCredentials, globalTargetFolder, true))
 		{
-
-
-			// Check if the the "delete target contents" flag is set
-			if(deleteTargetContents)
+			callingActivityInterface.OnSynchronisationFailed("TARGET_ACCESS");
+		}
+		else
+		{
+			try
 			{
-				// Check if the transfer is being performed
-				if(!performTransfer)
-				{
-					// Estimate what will be deleted
-					//targetCredentials == null ? EstimateLocalFolderContents(DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder))) : EstimateSMBFolderContents("smb://"+targetFolder+"/");
 
+				addedFileList = new ArrayList<AnalysedFile>();
+				updatedFilesList = new ArrayList<AnalysedFile>();
+				deletedFileList = new ArrayList<AnalysedFile>();
 
-					// List what will be deleted
+				// Perform / estimate target deletion (if required)
+				// Loop through all source files and folders
+				// Compare files with target to estimate / perform transfer
+				// (optional) Loop through all target files and folders
+				// (optional) Delete files / folders only required in the destination
 
-					// Estimate what will be transferred
-				}
-				else
+				Log.i("STORAGE", "Calling SynchroniseFolders with " + globalTargetFolder);
+				SynchroniseFolders(globalSourceCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalSourceFolder)), globalSourceFolder, globalSourceCredentials, globalTargetCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalTargetFolder)), globalTargetFolder, globalTargetCredentials, performTransfer);
+
+				/*// Check if the the "delete target contents" flag is set
+				if (deleteTargetContents)
 				{
 					// Determine whether the target folder is an SMB share or not
+					if (targetCredentials == null)
+					{
+						AnalyseLocalFolder(DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)), deletedFileSize, deletedFileList);
+					}
+					else
+					{
+						Log.i("STORAGE", "perofminr ganalysis");
+						// Analyse SMB folder
+						AnalyseSMBFolder("smb://" + targetFolder + "/", targetCredentials, deletedFileSize, deletedFileList);
+					}
+				}*/
+
+
+			/*try
+			{
+
+
+				// Check if the the "delete target contents" flag is set
+				if(deleteTargetContents)
+				{
+					// Check if the transfer is being performed
+					if(!performTransfer)
+					{
+						// Estimate what will be deleted
+						//targetCredentials == null ? EstimateLocalFolderContents(DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder))) : EstimateSMBFolderContents("smb://"+targetFolder+"/");
+
+
+						// List what will be deleted
+
+						// Estimate what will be transferred
+					}
+					else
+					{
+						// Determine whether the target folder is an SMB share or not
+						if(targetCredentials == null)
+						{
+							// Delete local folder's contents
+							DeleteLocalFolderContents(DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)));
+						}
+						else
+						{
+							// Delete SMB folder's contents
+							DeleteSMBFolderContents("smb://"+targetFolder+"/");
+						}
+
+						// Perform transfer
+					}
+				}
+				else
+				{
+					// Check if the transfer is being performed
+					if(!performTransfer)
+					{
+						// Estimate what will be changed
+
+						// List what will be changed
+					}
+					else
+					{
+						// Perform transfer
+					}
+				}*/
+
+
+
+
+
+				/*// Check if the the "delete target contents" flag is set
+				if(deleteTargetContents)
+				{
+					// If so, determine whether the target folder is an SMB share or not
 					if(targetCredentials == null)
 					{
 						// Delete local folder's contents
@@ -135,91 +183,55 @@ public class ContextualASyncTask extends AsyncTask
 						// Delete SMB folder's contents
 						DeleteSMBFolderContents("smb://"+targetFolder+"/");
 					}
-
-					// Perform transfer
 				}
+
+				// Check if the source is local
+				if(sourceCredentials == null)
+				{
+					EstimateLocalFolderContents(DocumentFile.fromTreeUri(contextRef, Uri.parse(sourceFolder)));
+					Log.i("STORAGE", "Folders: "+ totalFolders +", files: "+totalFiles+", data: "+ bytesTransferred);
+
+					// Report back to the calling activity
+					callingActivityInterface.OnSynchronisationProgress(totalFiles, filesProcessed, totalBytes, bytesProcessed);
+
+					// Check if the target is local
+					if(targetCredentials == null)
+					{
+						Log.i("STORAGE", "Performing local to local transfer...");
+						DuplicateLocalFolderToLocalFolder(DocumentFile.fromTreeUri(contextRef, Uri.parse(sourceFolder)), DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)));
+					}
+					else
+					{
+						Log.i("STORAGE", "Performing local to SMB transfer...");
+						DuplicateLocalFolderToSMBFolder(DocumentFile.fromTreeUri(contextRef, Uri.parse(sourceFolder)), "smb://"+targetFolder+"/");
+					}
+				}
+				else
+				{
+					EstimateSMBFolderContents("smb://"+sourceFolder+"/");
+					Log.i("STORAGE", "Folders: "+ totalFolders +", files: "+totalFiles+", data: "+ bytesTransferred);
+
+					// Report back to the calling activity
+					callingActivityInterface.OnSynchronisationProgress(totalFiles, filesProcessed, totalBytes, bytesProcessed);
+
+					// Check if the target is local
+					if(targetCredentials == null)
+					{
+						Log.i("STORAGE", "Performing SMB to local transfer...");
+						DuplicateSMBFolderToLocalFolder("smb://"+sourceFolder+"/", DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)));
+					}
+					else
+					{
+						Log.i("STORAGE", "Performing SMB to SMB transfer...");
+						DuplicateSMBFolderToSMBFolder("smb://"+sourceFolder+"/", "smb://"+targetFolder+"/");
+					}
+				}*/
+			} catch (Exception exception)
+			{
+				Log.i("STORAGE", "Exxxxxceptional");
+				exception.printStackTrace();
+				callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
 			}
-			else
-			{
-				// Check if the transfer is being performed
-				if(!performTransfer)
-				{
-					// Estimate what will be changed
-
-					// List what will be changed
-				}
-				else
-				{
-					// Perform transfer
-				}
-			}*/
-
-
-
-
-
-			/*// Check if the the "delete target contents" flag is set
-			if(deleteTargetContents)
-			{
-				// If so, determine whether the target folder is an SMB share or not
-				if(targetCredentials == null)
-				{
-					// Delete local folder's contents
-					DeleteLocalFolderContents(DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)));
-				}
-				else
-				{
-					// Delete SMB folder's contents
-					DeleteSMBFolderContents("smb://"+targetFolder+"/");
-				}
-			}
-
-			// Check if the source is local
-			if(sourceCredentials == null)
-			{
-				EstimateLocalFolderContents(DocumentFile.fromTreeUri(contextRef, Uri.parse(sourceFolder)));
-				Log.i("STORAGE", "Folders: "+ totalFolders +", files: "+totalFiles+", data: "+ bytesTransferred);
-
-				// Report back to the calling activity
-				callingActivityInterface.OnSynchronisationProgress(totalFiles, filesProcessed, totalBytes, bytesProcessed);
-
-				// Check if the target is local
-				if(targetCredentials == null)
-				{
-					Log.i("STORAGE", "Performing local to local transfer...");
-					DuplicateLocalFolderToLocalFolder(DocumentFile.fromTreeUri(contextRef, Uri.parse(sourceFolder)), DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)));
-				}
-				else
-				{
-					Log.i("STORAGE", "Performing local to SMB transfer...");
-					DuplicateLocalFolderToSMBFolder(DocumentFile.fromTreeUri(contextRef, Uri.parse(sourceFolder)), "smb://"+targetFolder+"/");
-				}
-			}
-			else
-			{
-				EstimateSMBFolderContents("smb://"+sourceFolder+"/");
-				Log.i("STORAGE", "Folders: "+ totalFolders +", files: "+totalFiles+", data: "+ bytesTransferred);
-
-				// Report back to the calling activity
-				callingActivityInterface.OnSynchronisationProgress(totalFiles, filesProcessed, totalBytes, bytesProcessed);
-
-				// Check if the target is local
-				if(targetCredentials == null)
-				{
-					Log.i("STORAGE", "Performing SMB to local transfer...");
-					DuplicateSMBFolderToLocalFolder("smb://"+sourceFolder+"/", DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolder)));
-				}
-				else
-				{
-					Log.i("STORAGE", "Performing SMB to SMB transfer...");
-					DuplicateSMBFolderToSMBFolder("smb://"+sourceFolder+"/", "smb://"+targetFolder+"/");
-				}
-			}*/
-		}
-		catch (Exception exception)
-		{
-			exception.printStackTrace();
-			//callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
 		}
 		return null;
 	}
@@ -234,6 +246,48 @@ public class ContextualASyncTask extends AsyncTask
 
 		// Report back to the calling activity
 		//callingActivityInterface.OnSynchronisationComplete(totalFiles, filesTransferred, totalBytes, bytesTransferred);
+	}
+
+	// Function to test access to a target folder
+	public boolean TestAccess(NtlmPasswordAuthentication targetCredentials, String targetFolderPath, boolean needsWriteAccess)
+	{
+		// Check if the target is an SMB share
+		if(targetCredentials != null)
+		{
+			try
+			{
+				// Attempt to connect to the target SMB share
+				SmbFile smbFile = new SmbFile("smb://"+targetFolderPath, targetCredentials);
+				if (!smbFile.canRead())
+				{
+					return false;
+				}
+				else if(needsWriteAccess && !smbFile.canWrite())
+				{
+					return false;
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				return false;
+			}
+		}
+		else
+		{
+			DocumentFile targetFolder = DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolderPath));
+			// Attempt to connect to the target DocumentFile
+			if(!targetFolder.canRead())
+			{
+				return false;
+			}
+			else if(needsWriteAccess && !targetFolder.canWrite())
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	// Function to determine the MIME type of a file based on its extension
@@ -273,6 +327,7 @@ public class ContextualASyncTask extends AsyncTask
 		}
 		catch (Exception e)
 		{
+			Log.i("STORAGE", "During DoesSMBFileFolderExist");
 			e.printStackTrace();
 		}
 		return false;
@@ -1007,6 +1062,7 @@ public class ContextualASyncTask extends AsyncTask
 				return document;
 			}
 		}
+		Log.i("STORAGE", "After exception?");
 		return null;
 	}
 

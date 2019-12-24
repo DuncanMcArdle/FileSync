@@ -309,6 +309,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	@Override
 	public void OnSynchronisationFailed(final String error)
 	{
+		Log.i("STORAGE","OnSynchronisationFailed called");
 		runOnUiThread(new Runnable()
 		{
 			@Override
@@ -317,6 +318,21 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 				// Switch based on the cause of the exception
 				switch(error)
 				{
+					case "SOURCE_ACCESS":
+					{
+						syncLoader.ShowLoaderWithIcon("Source folder access", R.drawable.ic_highlight_off_black_24dp, "Could not access the source folder, try editing the synchronisation and re-browsing to the source folder.");
+						break;
+					}
+					case "TARGET_ACCESS":
+					{
+						syncLoader.ShowLoaderWithIcon("Target folder write access", R.drawable.ic_highlight_off_black_24dp, "Could not write to the target folder, try editing the synchronisation and re-browsing to the target folder. In addition, ensure you specifically have write access to the folder.");
+						break;
+					}
+					case "Access is denied.":
+					{
+						syncLoader.ShowLoaderWithIcon("Permission denied", R.drawable.ic_highlight_off_black_24dp, "One of the source or target folder's sub-folders had a different security policy to its parent, which prevented the synchronisation from completing.");
+						break;
+					}
 					case "write failed: ENOSPC (No space left on device)":
 					{
 						syncLoader.ShowLoaderWithIcon("Out of space", R.drawable.ic_highlight_off_black_24dp, "There was insufficient space remaining in the destination. Please free up some space and try again.");
@@ -325,6 +341,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					default:
 					{
 						syncLoader.ShowLoaderWithIcon("Unknown error", R.drawable.ic_highlight_off_black_24dp, "An unknown error occurred during the synchronisation.");
+						Log.i("STORAGE", "Unknown error: "+error);
 					}
 				}
 
