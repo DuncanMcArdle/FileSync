@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	int filesToSynchronise;
 	long dataToSynchronise;
 
+	int lastFilesProcessed;
+	int lastPercentCompleted;
+
 	// Request codes
 	int REQUEST_CODE_ADD_SYNCHRONISATION = 1000;
 	int REQUEST_CODE_EDIT_SYNCHRONISATION = 1001;
@@ -65,21 +68,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		setContentView(R.layout.activity_main);
 		android.support.v7.widget.Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
-
-		/*ArrayList<AnalysedFile> fileList;
-		fileList = new ArrayList<AnalysedFile>();
-		fileList.add(new AnalysedFile("Some kind of file", "/Some/Path/", 2000));
-		fileList.add(new AnalysedFile("Second file", "/Some/Other/Path/", 4000));
-		fileList.add(new AnalysedFile("Some kind of file", "/Some/Path/", 2000));
-		fileList.add(new AnalysedFile("Second file", "/Some/Other/Path/", 4000));
-		fileList.add(new AnalysedFile("Some kind of file", "/Some/Path/", 2000));
-		fileList.add(new AnalysedFile("Second file", "/Some/Other/Path/", 4000));
-
-		ArrayList<AnalysedFile> emptyFileList;
-		emptyFileList = new ArrayList<AnalysedFile>();
-
-		Loader syncLoader = new Loader(this, getLayoutInflater());
-		syncLoader.ShowLoaderWithFileTransferSummary(false, 1000, 1000, 1000, fileList, emptyFileList, emptyFileList);*/
 
 		// Initialise shared preferences
 		myPreferences = getSharedPreferences("FileSync", 0);
@@ -278,15 +266,23 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		// Calculate the percentage complete
 		final int percentageComplete = (int) (((double) bytesProcessed / (double) dataToSynchronise) * 100);
 
-		runOnUiThread(new Runnable()
+		// Check if any visual changes have occurred
+		if(filesProcessed > lastFilesProcessed || percentageComplete > lastPercentCompleted)
 		{
-			@Override
-			public void run()
+			runOnUiThread(new Runnable()
 			{
-				// Update the loader
-				syncLoader.ShowLoaderWithProgressBar(percentageComplete, filesProcessed, filesToSynchronise, currentFileName);
-			}
-		});
+				@Override
+				public void run()
+				{
+					// Update the loader
+					syncLoader.ShowLoaderWithProgressBar(percentageComplete, filesProcessed, filesToSynchronise, currentFileName);
+				}
+			});
+		}
+
+		// Store the latest progress variables
+		lastFilesProcessed = filesProcessed;
+		lastPercentCompleted = percentageComplete;
 	}
 
 	// Function called when a synchronisation fails to coplete
