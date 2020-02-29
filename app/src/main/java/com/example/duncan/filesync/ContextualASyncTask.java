@@ -228,9 +228,18 @@ public class ContextualASyncTask extends AsyncTask
 				}*/
 			} catch (Exception exception)
 			{
-				Log.i("STORAGE", "Exxxxxceptional");
-				exception.printStackTrace();
-				callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
+				// Check if the synchronisation was manually cancelled
+				if(isCancelled())
+				{
+					callingActivityInterface.OnSynchronisationFailed("MANUALLY_CANCELLED");
+				}
+				else
+				{
+					// Log details of the exception and return its message
+					Log.i("STORAGE", "Exxxxxceptional");
+					exception.printStackTrace();
+					callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
+				}
 			}
 		}
 		return null;

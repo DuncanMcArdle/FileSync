@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						Log.i("STORAGE", "User cancelled the synchronisation during synchronisation.");
 
 						// Close the loader
-						syncLoader.HideLoader();
+						//syncLoader.HideLoader();
 					}
 				});
 			}
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	@Override
 	public void OnSynchronisationFailed(final String error)
 	{
-		Log.i("STORAGE","OnSynchronisationFailed called");
+		Log.i("STORAGE","OnSynchronisationFailed called (error: "+error+")");
 		runOnUiThread(new Runnable()
 		{
 			@Override
@@ -326,6 +326,12 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					case "TARGET_ACCESS":
 					{
 						syncLoader.ShowLoaderWithIcon("Target folder write access", R.drawable.ic_highlight_off_black_24dp, "Could not write to the target folder, try editing the synchronisation and re-browsing to the target folder. In addition, ensure you specifically have write access to the folder.");
+						break;
+					}
+					case "MANUALLY_CANCELLED":
+					{
+						Log.i("STORAGE", "Yuhguh");
+						syncLoader.ShowLoaderWithIcon("Cancelled synchronisation", R.drawable.ic_highlight_off_black_24dp, "The synchronisation was manually cancelled. Files may have been left in a part-synchronised state.");
 						break;
 					}
 					case "Access is denied.":
@@ -351,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		});
 
 		// Cancel the task
-		synchronisationTask.cancel(true);
+		//synchronisationTask.cancel(true);
 	}
 
 	// Function called when a synchronisation completes
@@ -436,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 								Log.i("STORAGE", "User cancelled the synchronisation during estimation.");
 
 								// Close the loader
-								syncLoader.HideLoader();
+								//syncLoader.HideLoader();
 							}
 						});
 
@@ -622,7 +628,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 							Log.i("STORAGE", "User cancelled the synchronisation during transfer.");
 
 							// Close the loader
-							syncLoader.HideLoader();
+							//syncLoader.HideLoader();
 						}
 					});
 
