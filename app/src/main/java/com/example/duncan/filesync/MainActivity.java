@@ -275,32 +275,16 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	@Override
 	public void OnSynchronisationProgress(final int filesProcessed, final int bytesProcessed, final String currentFileName)
 	{
+		// Calculate the percentage complete
+		final int percentageComplete = (int) (((double) bytesProcessed / (double) dataToSynchronise) * 100);
+
 		runOnUiThread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				// Update the title
-				syncLoader.UpdateTitle("Synchronising...");
-
-				// Calculate the percentage complete
-				int percentageComplete = (int) (((double) bytesProcessed / (double) dataToSynchronise) * 100);
-
 				// Update the loader
 				syncLoader.ShowLoaderWithProgressBar(percentageComplete, filesProcessed, filesToSynchronise, currentFileName);
-				syncLoader.UpdateButtons(false, null, null, true, "Cancel", new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						// Stop the ongoing task
-						synchronisationTask.cancel(true);
-						Log.i("STORAGE", "User cancelled the synchronisation during synchronisation.");
-
-						// Close the loader
-						//syncLoader.HideLoader();
-					}
-				});
 			}
 		});
 	}
@@ -357,31 +341,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		});
 
 		// Cancel the task
-		//synchronisationTask.cancel(true);
-	}
-
-	// Function called when a synchronisation completes
-	@Override
-	public void OnSynchronisationComplete(int totalFiles, int filesTransferred, int totalBytes, int bytesTransferred)
-	{
-		Log.i("STORAGE", "Sync complete");
-
-		// Update the loader
-		syncLoader.UpdateTitle("Synchronised");
-
-		// Show the summary
-		//syncLoader.ShowLoaderWithFileTransferSummary(totalFiles, (totalFiles - filesTransferred), bytesTransferred);
-
-		// Update the loader's close button
-		syncLoader.UpdateButtons(false, null, null, true, "Close", new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				// Close the loader
-				syncLoader.HideLoader();
-			}
-		});
+		synchronisationTask.cancel(true);
 	}
 
 	class CustomAdapter extends BaseAdapter
@@ -595,9 +555,9 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		return new JSONArray(jsonList);
 	}
 
-	public void NewOnSyncComplete(boolean performTransfer, long addedFileSize, ArrayList<AnalysedFile> addedFileList, long updatedFileSize, ArrayList<AnalysedFile> updatedFileList, long deletedFileSize, ArrayList<AnalysedFile> deletedFileList)
+	public void OnSynchronisationComplete(boolean performTransfer, long addedFileSize, ArrayList<AnalysedFile> addedFileList, long updatedFileSize, ArrayList<AnalysedFile> updatedFileList, long deletedFileSize, ArrayList<AnalysedFile> deletedFileList)
 	{
-		Log.i("STORAGE", "NewOnSyncComplete");
+		Log.i("STORAGE", "OnSynchronisationComplete");
 
 		// Check if a transfer was being performed
 		if(!performTransfer)

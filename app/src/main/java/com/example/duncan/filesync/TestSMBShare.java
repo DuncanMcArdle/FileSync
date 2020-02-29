@@ -1,20 +1,9 @@
 package com.example.duncan.filesync;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.provider.DocumentFile;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
-import android.widget.Button;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
@@ -22,7 +11,6 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileInputStream;
 
 public class TestSMBShare extends AsyncTask
 {

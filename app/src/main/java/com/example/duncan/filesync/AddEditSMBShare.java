@@ -282,54 +282,6 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 					// Test the SMB share
 					testSMBShare = new TestSMBShare(AddEditSMBShare.this, addressEditText.getText().toString(), SMBShareAuthentication, AddEditSMBShare.this);
 					testSMBShare.execute();
-					/*try
-					{
-						// Attempt to connect to the SMB share
-						SmbFile smbFile = new SmbFile();
-						Log.i("STORAGE", "SMB share connection passed");
-
-						smbFile.connect();
-
-						SmbFile[] fileList = smbFile.listFiles();
-						for (SmbFile file : fileList)
-						{
-							Log.i("STORAGE", "Found SMB file: " + file.getName());
-						}
-
-					}
-					catch (MalformedURLException e)
-					{
-						Log.i("STORAGE", "SMB share connection failed");
-						e.printStackTrace();
-					}
-					catch (SmbException e)
-					{
-						Log.i("STORAGE", "Other exception");
-						e.printStackTrace();
-					} catch (IOException e)
-					{
-						Log.i("STORAGE", "Connection exception");
-						e.printStackTrace();
-					}
-					catch(Exception e)
-					{
-						Log.i("STORAGE", "ANE XCEPTION");
-						e.printStackTrace();
-					}*/
-
-					/*// Prepare the new job's details to be returned
-                    Intent activityResult = new Intent();
-                    activityResult.putExtra("ID", modifyingSMBShare);
-                    activityResult.putExtra("Title", titleEditText.getText().toString());
-                    activityResult.putExtra("Domain", domainEditText.getText().toString());
-                    activityResult.putExtra("Username", usernameEditText.getText().toString());
-					activityResult.putExtra("Password", passwordEditText.getText().toString());
-					activityResult.putExtra("Address", addressEditText.getText().toString());
-                    setResult(RESULT_OK, activityResult);
-
-                    // Finish the activity, returning to the calling one
-                    finish();
-                    overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);*/
                 }
             }
         });
