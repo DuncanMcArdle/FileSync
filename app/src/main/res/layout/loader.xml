@@ -126,6 +126,7 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:padding="10dp"
+            android:fadeScrollbars="false"
             android:layout_height="100dp" />
 
         <LinearLayout android:id="@+id/loaderSummaryFilesUpdatedSection"
@@ -169,6 +170,7 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:padding="10dp"
+            android:fadeScrollbars="false"
             android:layout_height="100dp" />
 
         <LinearLayout android:id="@+id/loaderSummaryFilesDeletedSection"
@@ -212,6 +214,7 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:padding="10dp"
+            android:fadeScrollbars="false"
             android:layout_height="100dp" />
 
     </LinearLayout>
@@ -298,6 +301,7 @@
         android:layout_height="40dp" />
 
     <TextView android:id="@+id/loaderDescriptionText"
+        android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="15dp"/>

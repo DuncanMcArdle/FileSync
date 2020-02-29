@@ -225,6 +225,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 						public void run()
 						{
 							// Finish the activity, returning to the "Manage SMB Shares" page
+							loader.HideLoader();
 							finish();
 							overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 						}
@@ -443,7 +444,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 			case "SUCCESS":
 			{
 				// Notify the user
-				Loader loader = new Loader(this, getLayoutInflater());
+				final Loader loader = new Loader(this, getLayoutInflater());
 				loader.ShowLoaderWithIcon(modifyingSMBShare == -1 ? "Added successfully." : "Updated successfully.", R.drawable.ic_done_black_24dp, null);
 				loader.UpdateButtons(false, null, null, false, null, null);
 
@@ -466,6 +467,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 					public void run()
 					{
 						// Finish the activity, returning to the "Manage SMB Shares" page
+						loader.HideLoader();
 						finish();
 						overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 					}

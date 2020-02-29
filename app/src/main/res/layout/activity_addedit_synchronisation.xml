@@ -98,7 +98,7 @@
                     <RadioButton android:id="@+id/sourceTypeNetwork"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Network (SMB share)"/>
+                        android:text="Network (SMB)"/>
 
                 </RadioGroup>
 
@@ -250,7 +250,7 @@
                     <RadioButton android:id="@+id/targetTypeNetwork"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Network (SMB share)"/>
+                        android:text="Network (SMB)"/>
 
                 </RadioGroup>
 
@@ -397,9 +397,10 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:orientation="horizontal"
+                        android:layout_weight="0.5">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -410,7 +411,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/lightBlue"
-                            android:layout_marginLeft="5dp"
+                            android:layout_marginLeft="5dip"
                             android:text="(info)"></TextView>
 
                     </LinearLayout>
@@ -418,9 +419,9 @@
                     <Spinner
                         android:id="@+id/additionalOptionDeletionPolicy"
                         android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dip"
                         android:entries="@array/add_edit_synchronisation_deletion_policy_options"
-                        android:layout_weight="0"></Spinner>
+                        android:layout_weight="0.50"></Spinner>
 
                 </LinearLayout>
 

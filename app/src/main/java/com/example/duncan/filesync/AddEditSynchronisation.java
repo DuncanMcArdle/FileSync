@@ -3,9 +3,11 @@ package com.example.duncan.filesync;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.DocumentsContract;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +30,8 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.provider.DocumentsContract.EXTRA_INITIAL_URI;
 
 public class AddEditSynchronisation extends AppCompatActivity
 {
@@ -339,7 +343,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 				setResult(RESULT_OK, activityResult);
 
 				// Notify the user
-				Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
+				final Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
 				loader.ShowLoaderWithIcon("Deleted successfully.", R.drawable.ic_done_black_24dp, null);
 				loader.UpdateButtons(false, null, null, false, null, null);
 
@@ -351,6 +355,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 					public void run()
 					{
 						// Finish the activity, returning to the "Manage SMB Shares" page
+						loader.HideLoader();
 						finish();
 						overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 					}
@@ -404,6 +409,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 				{
 					// If so, open a local browser
 					Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+					intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 					intent.putExtra("android.content.extra.SHOW_ADVANCED",true);
 					startActivityForResult(intent, REQUEST_CODE_SELECT_SOURCE_FOLDER_LOCAL);
 				}
@@ -434,9 +440,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 			@Override
 			public void onClick(View v)
 			{
-				Log.i("STORAGE", "Target type local: "+findViewById(R.id.targetTypeLocal).isSelected());
-				Log.i("STORAGE", "Target type SMB: "+findViewById(R.id.targetTypeNetwork).isSelected());
-
 				// Check if it's a "local" browse
 				if(targetTypeRadioGroup.getCheckedRadioButtonId() == R.id.targetTypeLocal)
 				{
@@ -449,8 +452,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 				{
 					try
 					{
-						Log.i("STORAGE", "Sending '"+targetFolderEditText.getText()+"'");
-
 						// Open an SMB browser
 						Intent intent = new Intent(AddEditSynchronisation.this, SMBBrowser.class);
 						intent.putExtra("SMB_JSON", SMBShareArray.getJSONObject(targetSMBSpinner.getSelectedItemPosition() - 1).toString());
@@ -529,7 +530,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 					setResult(RESULT_OK, activityResult);
 
 					// Notify the user
-					Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
+					final Loader loader = new Loader(AddEditSynchronisation.this, getLayoutInflater());
 					loader.ShowLoaderWithIcon(modifyingSynchronisation == -1 ? "Added successfully." : "Updated successfully.", R.drawable.ic_done_black_24dp, null);
 					loader.UpdateButtons(false, null, null, false, null, null);
 
@@ -541,6 +542,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 						public void run()
 						{
 							// Finish the activity, returning to the "Manage SMB Shares" page
+							loader.HideLoader();
 							finish();
 							overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 						}
@@ -591,6 +593,10 @@ public class AddEditSynchronisation extends AppCompatActivity
 				// Store the selected folder
 				sourceFolder = resultData.getData();
 
+				// Obtain persistent permissions on the selected URI
+				final int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+				getContentResolver().takePersistableUriPermission(sourceFolder, takeFlags);
+
 				// Update the relevant EditText
 				sourceFolderEditText.setText(sourceFolder.getLastPathSegment());
 
@@ -604,6 +610,10 @@ public class AddEditSynchronisation extends AppCompatActivity
 			{
 				// Store the selected folder
 				targetFolder = resultData.getData();
+
+				// Obtain persistent permissions on the selected URI
+				final int takeFlags = resultData.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+				getContentResolver().takePersistableUriPermission(targetFolder, takeFlags);
 
 				// Update the relevant EditText
 				targetFolderEditText.setText(targetFolder.getLastPathSegment());

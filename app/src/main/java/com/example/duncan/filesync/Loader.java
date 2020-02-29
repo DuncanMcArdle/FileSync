@@ -365,7 +365,7 @@ public class Loader
 
 	public void HideLoader()
 	{
-		alertDialog.hide();
+		alertDialog.dismiss();
 	}
 
 	class FileListAdapter extends BaseAdapter
