@@ -53,6 +53,9 @@ public class TestSMBShare extends AsyncTask
     {
 		try
         {
+			// Artificially delay (to allow the loader to show)
+			Thread.sleep(500);
+
         	SmbFile testFile = new SmbFile(SMBShareURL, SMBShareAuthentication);
         	testFile.setConnectTimeout(5000);
         	testFile.connect();
