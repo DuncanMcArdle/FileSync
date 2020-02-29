@@ -122,12 +122,26 @@
 
         </LinearLayout>
 
-        <ListView android:id="@+id/loaderSummaryFilesAddedListView"
-            android:visibility="gone"
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:padding="10dp"
-            android:fadeScrollbars="false"
-            android:layout_height="100dp" />
+            android:layout_height="match_parent">
+
+            <ListView android:id="@+id/loaderSummaryFilesAddedListView"
+                android:visibility="gone"
+                android:padding="10dp"
+                android:fadeScrollbars="false"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <LinearLayout android:id="@+id/loaderSummaryFilesUpdatedSection"
             android:orientation="horizontal"
@@ -166,12 +180,26 @@
 
         </LinearLayout>
 
-        <ListView android:id="@+id/loaderSummaryFilesUpdatedListView"
-            android:visibility="gone"
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:padding="10dp"
-            android:fadeScrollbars="false"
-            android:layout_height="100dp" />
+            android:layout_height="match_parent">
+
+            <ListView android:id="@+id/loaderSummaryFilesUpdatedListView"
+                android:visibility="gone"
+                android:padding="10dp"
+                android:fadeScrollbars="false"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <LinearLayout android:id="@+id/loaderSummaryFilesDeletedSection"
             android:orientation="horizontal"
@@ -210,12 +238,26 @@
 
         </LinearLayout>
 
-        <ListView android:id="@+id/loaderSummaryFilesDeletedListView"
-            android:visibility="gone"
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:padding="10dp"
-            android:fadeScrollbars="false"
-            android:layout_height="100dp" />
+            android:layout_height="match_parent">
+
+            <ListView android:id="@+id/loaderSummaryFilesDeletedListView"
+                android:visibility="gone"
+                android:padding="10dp"
+                android:fadeScrollbars="false"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="100dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 
@@ -267,6 +309,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
+                    android:layout_marginLeft="5dip"
                     android:text="1 of 10"/>
 
             </LinearLayout>
