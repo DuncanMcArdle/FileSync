@@ -22,20 +22,20 @@ import java.util.Locale;
 
 public class Loader
 {
-	AlertDialog.Builder alertDialogBuilder;
-	LayoutInflater layoutInflater;
-	Context context;
-	AlertDialog alertDialog;
+	private AlertDialog.Builder alertDialogBuilder;
+	private LayoutInflater layoutInflater;
+	private Context context;
+	private AlertDialog alertDialog;
 
 	// Titles
-	TextView addedFilesTitle;
-	TextView updatedFilesTitle;
-	TextView deletedFilesTitle;
+	private TextView addedFilesTitle;
+	private TextView updatedFilesTitle;
+	private TextView deletedFilesTitle;
 
 	// List views
-	ListView addedFilesListViewShow;
-	ListView updatedFilesListViewShow;
-	ListView deletedFilesListViewShow;
+	private ListView addedFilesListViewShow;
+	private ListView updatedFilesListViewShow;
+	private ListView deletedFilesListViewShow;
 
 	public Loader(Context passedInContext, LayoutInflater passedInLayoutInflater)
 	{
@@ -330,7 +330,7 @@ public class Loader
 	}
 
 	// Function that converts bytes into a human readable format
-	public static String HumanReadableByteCount(long bytes, boolean si)
+	private static String HumanReadableByteCount(long bytes, boolean si)
 	{
 		int unit = si ? 1000 : 1024;
 		if (bytes < unit) return bytes + " B";
@@ -340,7 +340,7 @@ public class Loader
 	}
 
 	// Function that converts sections into a human readable string
-	public static String MakeSecondsReadable(int seconds)
+	private static String MakeSecondsReadable(int seconds)
 	{
 		int sec = seconds % 60;
 		int min = (seconds / 60)%60;

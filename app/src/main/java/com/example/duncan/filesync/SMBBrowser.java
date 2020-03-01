@@ -27,14 +27,13 @@ import jcifs.smb.SmbFile;
 
 public class SMBBrowser extends AppCompatActivity
 {
-
-	CustomAdapter fileFolderListAdapter;
-	List<List<String>> fileFolderList = new ArrayList<List<String>>();
-	String SMBURL;
-	String currentPath = "";
-	String currentFolder;
-	NtlmPasswordAuthentication SMBShareAuthentication;
-	Button upButton;
+	private CustomAdapter fileFolderListAdapter;
+	private List<List<String>> fileFolderList = new ArrayList<List<String>>();
+	private String SMBURL;
+	private String currentPath = "";
+	private String currentFolder;
+	private NtlmPasswordAuthentication SMBShareAuthentication;
+	private Button upButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

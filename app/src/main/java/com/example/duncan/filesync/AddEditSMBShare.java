@@ -23,27 +23,27 @@ import jcifs.smb.NtlmPasswordAuthentication;
 public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.TestResponse
 {
     // Miscellaneous variables
-    int modifyingSMBShare = -1;
-    Toolbar activityToolbar;
-    Loader testSMBShareLoader;
-	TestSMBShare testSMBShare;
-	String originalTitle = "";
-	SharedPreferences myPreferences;
+    private int modifyingSMBShare = -1;
+	private Toolbar activityToolbar;
+	private Loader testSMBShareLoader;
+	private TestSMBShare testSMBShare;
+	private String originalTitle = "";
+	private SharedPreferences myPreferences;
 
     // Form inputs
-    Button deleteSMBShareButton;
-    EditText titleEditText;
-    TextInputLayout titleEditTextContainer;
-    EditText domainEditText;
-    TextInputLayout domainEditTextContainer;
-    EditText usernameEditText;
-    TextInputLayout usernameEditTextContainer;
-	EditText passwordEditText;
-	TextInputLayout passwordEditTextContainer;
-	EditText addressEditText;
-	TextInputLayout addressEditTextContainer;
-    Button addSMBShareButton;
-    TextView smbShareResult;
+	private Button deleteSMBShareButton;
+	private EditText titleEditText;
+	private TextInputLayout titleEditTextContainer;
+	private EditText domainEditText;
+	private TextInputLayout domainEditTextContainer;
+	private EditText usernameEditText;
+	private TextInputLayout usernameEditTextContainer;
+	private EditText passwordEditText;
+	private TextInputLayout passwordEditTextContainer;
+	private EditText addressEditText;
+	private TextInputLayout addressEditTextContainer;
+	private Button addSMBShareButton;
+	private TextView smbShareResult;
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -295,7 +295,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
         });
     }
 
-    public void ValidateTitle()
+    private void ValidateTitle()
     {
         // Validate the input
         if(titleEditText.getText().toString().length() <= 0 || titleEditText.getText().toString().equals(""))
@@ -338,7 +338,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
         }
     }
 
-    public void ValidateUsername()
+    private void ValidateUsername()
     {
         // Validate the input
         if(usernameEditText.getText().toString().length() <= 0 || usernameEditText.getText().toString() == "")
@@ -352,7 +352,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
         }
     }
 
-	public void ValidatePassword()
+	private void ValidatePassword()
 	{
 		// Validate the input
 		if(passwordEditText.getText().toString().length() <= 0 || passwordEditText.getText().toString() == "")
@@ -366,7 +366,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 		}
 	}
 
-	public void ValidateSMBAddress()
+	private void ValidateSMBAddress()
 	{
 		// Validate the input
 		if(addressEditText.getText().toString().length() <= 0 || addressEditText.getText().toString() == "")
@@ -381,7 +381,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	}
 
 	// Function to enable or disable the form inputs
-	public void ToggleFormInputs(boolean enabled)
+	private void ToggleFormInputs(boolean enabled)
 	{
 		// Enable the form's inputs and buttons
 		getSupportActionBar().setDisplayHomeAsUpEnabled(enabled);

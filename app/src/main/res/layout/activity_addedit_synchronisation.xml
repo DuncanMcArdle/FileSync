@@ -145,8 +145,7 @@
                 <Spinner android:id="@+id/sourceSMBSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown"
-                    ></Spinner>
+                    android:spinnerMode="dropdown" />
 
                 <LinearLayout android:id="@+id/sourceSMBErrorContainer"
                     android:layout_width="match_parent"
@@ -297,8 +296,7 @@
                 <Spinner android:id="@+id/targetSMBSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown"
-                    ></Spinner>
+                    android:spinnerMode="dropdown" />
 
                 <LinearLayout android:id="@+id/targetSMBErrorContainer"
                     android:layout_width="match_parent"
@@ -405,14 +403,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Deletion policy"></TextView>
+                            android:text="Deletion policy" />
 
                         <TextView android:id="@+id/additionalOptionDeletionPolicyInfoButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/lightBlue"
                             android:layout_marginLeft="5dip"
-                            android:text="(info)"></TextView>
+                            android:text="(info)" />
 
                     </LinearLayout>
 
@@ -421,7 +419,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="0dip"
                         android:entries="@array/add_edit_synchronisation_deletion_policy_options"
-                        android:layout_weight="0.50"></Spinner>
+                        android:layout_weight="0.50" />
 
                 </LinearLayout>
 

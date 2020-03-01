@@ -1,7 +1,6 @@
 package com.example.duncan.filesync;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -35,32 +34,31 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	Uri sourceFile;
 	private static final byte[] buffer = new byte[60416];
 	private SharedPreferences myPreferences;
-	SharedPreferences.Editor myPrefsEdit;
-	CustomAdapter synchronisationListAdapter;
-	ContextualASyncTask synchronisationTask;
-	long synchronisationStart;
+	private SharedPreferences.Editor myPrefsEdit;
+	private CustomAdapter synchronisationListAdapter;
+	private ContextualASyncTask synchronisationTask;
+	private long synchronisationStart;
+	private int lastFilesProcessed;
+	private int lastPercentCompleted;
 
 	// Variables for storing the current synchronisation's details
-	NtlmPasswordAuthentication sourceAuthentication;
-	NtlmPasswordAuthentication targetAuthentication;
-	String sourceFolder;
-	String targetFolder;
-	int deletionPolicy;
-	int filesToSynchronise;
-	long dataToSynchronise;
-
-	int lastFilesProcessed;
-	int lastPercentCompleted;
+	private NtlmPasswordAuthentication sourceAuthentication;
+	private NtlmPasswordAuthentication targetAuthentication;
+	private String sourceFolder;
+	private String targetFolder;
+	private int deletionPolicy;
+	private int filesToSynchronise;
+	private long dataToSynchronise;
 
 	// Request codes
-	int REQUEST_CODE_ADD_SYNCHRONISATION = 1000;
-	int REQUEST_CODE_EDIT_SYNCHRONISATION = 1001;
+	private int REQUEST_CODE_ADD_SYNCHRONISATION = 1000;
+	private int REQUEST_CODE_EDIT_SYNCHRONISATION = 1001;
 
 	// Array of synchronisation jobs
-	JSONArray synchronisationArray = null;
+	private JSONArray synchronisationArray = null;
 
 	// Loader
-	Loader syncLoader;
+	private Loader syncLoader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -229,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	}
 
 	// Function to load and display synchronisations
-	public void LoadSynchronisations()
+	private void LoadSynchronisations()
 	{
 		// Obtain a reference to the ListView's loading text
 		TextView listViewLoader = (TextView) findViewById(R.id.listViewLoader);
@@ -467,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	}
 
 	// Function to return the SMB credentials for an SMB share based on its title
-	NtlmPasswordAuthentication GetSMBCredentials(String SMBShareTitle)
+	private NtlmPasswordAuthentication GetSMBCredentials(String SMBShareTitle)
 	{
 		try
 		{
@@ -493,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	}
 
 	// Function to return the SMB address for an SMB share based on its title
-	String GetSMBAddress(String SMBShareTitle)
+	private String GetSMBAddress(String SMBShareTitle)
 	{
 		try
 		{
@@ -516,7 +514,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	}
 
 	// Function to sort an array of JSON objects
-	public JSONArray SortJSONArray(JSONArray arrayToSort, final String attributeToSort) throws JSONException
+	private JSONArray SortJSONArray(JSONArray arrayToSort, final String attributeToSort) throws JSONException
 	{
 		// Convert the JSON Array to a list of JSON objects (so it can be sorted)
 		List<JSONObject> jsonList = new ArrayList<JSONObject>();

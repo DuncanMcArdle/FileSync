@@ -25,15 +25,15 @@ import java.util.List;
 public class ManageSMBShares extends AppCompatActivity
 {
     private SharedPreferences myPreferences;
-    SharedPreferences.Editor myPrefsEdit;
-    CustomAdapter smbShareListAdapter;
+    private SharedPreferences.Editor myPrefsEdit;
+    private CustomAdapter smbShareListAdapter;
 
     // Request codes
-    int REQUEST_CODE_ADD_SMBSHARE = 1000;
-    int REQUEST_CODE_EDIT_SMBSHARE = 1001;
+    private int REQUEST_CODE_ADD_SMBSHARE = 1000;
+    private int REQUEST_CODE_EDIT_SMBSHARE = 1001;
 
     // Array of SMB shares
-    JSONArray smbShareArray = null;
+    private JSONArray smbShareArray = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,7 +191,7 @@ public class ManageSMBShares extends AppCompatActivity
     }
 
     // Function to load and display the SMB shares
-    public void LoadSMBShares()
+    private void LoadSMBShares()
     {
         // Obtain a reference to the ListView's loading text
         TextView listViewLoader = (TextView) findViewById(R.id.listViewLoader);
@@ -300,7 +300,7 @@ public class ManageSMBShares extends AppCompatActivity
     }
 
     // Function to sort an array of JSON objects
-    public JSONArray SortJSONArray(JSONArray arrayToSort, final String attributeToSort) throws JSONException
+    private JSONArray SortJSONArray(JSONArray arrayToSort, final String attributeToSort) throws JSONException
     {
         // Convert the JSON Array to a list of JSON objects (so it can be sorted)
         List<JSONObject> jsonList = new ArrayList<JSONObject>();
