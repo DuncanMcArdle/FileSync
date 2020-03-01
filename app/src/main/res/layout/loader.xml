@@ -340,6 +340,7 @@
         android:padding="15dp"/>
 
     <ImageView android:id="@+id/loaderIcon"
+        android:contentDescription="loader icon"
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 
