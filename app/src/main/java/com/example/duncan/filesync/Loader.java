@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Loader
 {
@@ -44,7 +45,7 @@ public class Loader
 		alertDialogBuilder = new AlertDialog.Builder(context);
 
 		// Setup the loader
-		alertDialogBuilder.setView(layoutInflater.inflate(R.layout.loader, null));
+		alertDialogBuilder.setView(View.inflate(context, R.layout.loader, null));
 		alertDialogBuilder.setCancelable(false);
 		alertDialogBuilder.setNegativeButton("Cancel", null);
 		alertDialog = alertDialogBuilder.create();
@@ -185,15 +186,15 @@ public class Loader
 		TextView timeTakenTextView = alertDialog.findViewById(R.id.loaderSummaryTimeTaken);
 		timeTakenTextView.setText(MakeSecondsReadable(timeTaken));
 		TextView filesTransferredTextView = alertDialog.findViewById(R.id.loaderSummaryFilesTransferred);
-		filesTransferredTextView.setText(String.format("%,d", filesTransferred));
+		filesTransferredTextView.setText(String.format(Locale.UK, "%,d", filesTransferred));
 		TextView dataTransferredTextView = alertDialog.findViewById(R.id.loaderSummaryDataTransferred);
 		dataTransferredTextView.setText(HumanReadableByteCount(dataTransferred, true));
 		TextView filesAddedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesAddedNumber);
-		filesAddedTextView.setText(String.format("%,d", addedFileList.size()));
+		filesAddedTextView.setText(String.format(Locale.UK,"%,d", addedFileList.size()));
 		TextView filesUpdatedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedNumber);
-		filesUpdatedTextView.setText(String.format("%,d", updatedFileList.size()));
+		filesUpdatedTextView.setText(String.format(Locale.UK,"%,d", updatedFileList.size()));
 		TextView filesDeletedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedNumber);
-		filesDeletedTextView.setText(String.format("%,d", deletedFileList.size()));
+		filesDeletedTextView.setText(String.format(Locale.UK,"%,d", deletedFileList.size()));
 
 		// Minimise the file lists
 		// Show / Hide the target ListView (and update the associated button)
@@ -339,7 +340,7 @@ public class Loader
 		if (bytes < unit) return bytes + " B";
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+		return String.format(Locale.UK,"%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
 	// Function that converts sections into a human readable string

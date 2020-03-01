@@ -1,6 +1,7 @@
 package com.example.duncan.filesync;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -363,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
-			convertView = getLayoutInflater().inflate(R.layout.synchronisation_listitem, null);
+			convertView = View.inflate(getApplicationContext(), R.layout.synchronisation_listitem, null);
 
 			TextView jobTitle = (TextView) convertView.findViewById(R.id.jobTitle);
 			try

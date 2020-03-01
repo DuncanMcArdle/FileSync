@@ -194,7 +194,7 @@ public class SMBBrowser extends AppCompatActivity
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
-			convertView = getLayoutInflater().inflate(R.layout.smb_folder_listitem, null);
+			convertView = View.inflate(getApplicationContext(), R.layout.smb_folder_listitem, null);
 
 			TextView jobTitle = (TextView) convertView.findViewById(R.id.smbFileFolderTitle);
 			ImageView jobIcon = (ImageView) convertView.findViewById(R.id.smbFileFolderIcon);

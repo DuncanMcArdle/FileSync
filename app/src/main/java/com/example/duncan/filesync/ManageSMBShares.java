@@ -250,7 +250,7 @@ public class ManageSMBShares extends AppCompatActivity
         @Override
         public View getView(final int position, View convertView, ViewGroup parent)
         {
-            convertView = getLayoutInflater().inflate(R.layout.smbshare_listitem, null);
+            convertView = View.inflate(getApplicationContext(), R.layout.smbshare_listitem, null);
 
             TextView smbShareTitle = (TextView) convertView.findViewById(R.id.smbFileFolderTitle);
             try
