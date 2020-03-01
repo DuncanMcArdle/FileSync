@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -404,14 +405,19 @@ public class Loader
 					inflate(R.layout.file_list_item, parent, false);
 			}
 
-
-
 			AnalysedFile currentFile = (AnalysedFile) getItem(position);
 			TextView fileNumber = (TextView) convertView.findViewById(R.id.fileNumber);
 			TextView fileName = (TextView) convertView.findViewById(R.id.fileName);
 
 			// URL decode the file's path
-			String decodedPath = URLDecoder.decode(currentFile.filePath);
+			String decodedPath = null;
+			try
+			{
+				decodedPath = URLDecoder.decode(currentFile.filePath, "UTF-8");
+			} catch (UnsupportedEncodingException e)
+			{
+				e.printStackTrace();
+			}
 
 			// Obtain the final segment of the URI
 			String finalPathSegment = decodedPath.substring(decodedPath.lastIndexOf(":") + 1);
