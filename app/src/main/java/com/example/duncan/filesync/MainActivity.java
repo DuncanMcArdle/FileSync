@@ -609,23 +609,5 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 
 		// Show a summary
 		syncLoader.ShowLoaderWithFileTransferSummary(performTransfer, (int) ((System.currentTimeMillis() / 1000L) - synchronisationStart), (addedFileList.size() + updatedFileList.size()), (addedFileSize + updatedFileSize), addedFileList, updatedFileList, deletedFileList);
-
-		/*// Check if only an initial estimation was being conducted
-		if(!performTransfer)
-		{
-			// Show the summary of the estimation
-			Loader syncLoader = new Loader(this, getLayoutInflater());
-			syncLoader.ShowLoaderWithFileTransferSummary(false, 1000, 1000, 1000, fileList, emptyFileList, emptyFileList);
-		}
-		else
-		{
-			// Show the summary of the synchronisation
-		}
-
-		Log.i("STORAGE", "Initial analysis complete. "+deletedFileList.size()+" files (totalling "+deletedFileSize+") to delete: ");
-		for(int i = 0; i < deletedFileList.size(); i++)
-		{
-			Log.i("STORAGE", deletedFileList.get(i).fileName+" / "+deletedFileList.get(i).filePath+" / "+deletedFileList.get(i).fileSize);
-		}*/
 	}
 }
