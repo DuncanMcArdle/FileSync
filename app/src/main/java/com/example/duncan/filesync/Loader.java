@@ -53,12 +53,15 @@ public class Loader
 		// Show the dialog
 		alertDialog.show();
 
-		//alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "HUHWHAT", (DialogInterface.OnClickListener) null);
+		// Obtain references to the listviews and their titles
+		addedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
+		addedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesAddedListView);
+		updatedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
+		updatedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedListView);
+		deletedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
+		deletedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedListView);
 
 		// Add listeners for the expansion buttons on transfer summaries
-		TextView showFilesAdded = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
-		TextView showFilesUpdated = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
-		TextView showFilesDeleted = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
 		View.OnClickListener showHideFilesListener = new View.OnClickListener()
 		{
 			@Override
@@ -92,17 +95,9 @@ public class Loader
 				targetListView.setVisibility(targetListView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 			}
 		};
-		showFilesAdded.setOnClickListener(showHideFilesListener);
-		showFilesUpdated.setOnClickListener(showHideFilesListener);
-		showFilesDeleted.setOnClickListener(showHideFilesListener);
-
-		// Obtain references to the listviews and their titles
-		addedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
-		addedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesAddedListView);
-		updatedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
-		updatedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedListView);
-		deletedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
-		deletedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedListView);
+		addedFilesTitle.setOnClickListener(showHideFilesListener);
+		updatedFilesTitle.setOnClickListener(showHideFilesListener);
+		deletedFilesTitle.setOnClickListener(showHideFilesListener);
 	}
 
 	// Update the loader's title
