@@ -84,6 +84,7 @@ public class ContextualASyncTask extends AsyncTask
 				// Check if the synchronisation was manually cancelled
 				if(isCancelled())
 				{
+					Log.i("STORAGE", "User cancelled the task (during overall synchronisation)");
 					callingActivityInterface.OnSynchronisationFailed("MANUALLY_CANCELLED");
 				}
 				else
@@ -174,8 +175,16 @@ public class ContextualASyncTask extends AsyncTask
 		{
 			byte[] buf = new byte[1024];
 			int nosRead;
-			while ((nosRead = in.read(buf)) != -1)  // read this carefully ...
+			while ((nosRead = in.read(buf)) != -1)
 			{
+				// Check if the synchronisation has been cancelled
+				if(isCancelled())
+				{
+					Log.i("STORAGE", "User cancelled the task (during file transfer)");
+					callingActivityInterface.OnSynchronisationFailed("MANUALLY_CANCELLED");
+					break;
+				}
+
 				out.write(buf, 0, nosRead);
 
 				// Increment the number of bytes processed
