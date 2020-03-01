@@ -45,7 +45,6 @@ public class TestSMBShare extends AsyncTask
 			Thread.sleep(500);
 
         	SmbFile testFile = new SmbFile(SMBShareURL, SMBShareAuthentication);
-        	testFile.setConnectTimeout(5000);
         	testFile.connect();
 			testResult = "SUCCESS";
 			Log.i("STORAGE", "Connected successfully.");

@@ -264,17 +264,25 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 					testSMBShareLoader.UpdateTitle("Testing SMB share...");
 					testSMBShareLoader.UpdateButtons(false, null, null, false, null, null);
 
+					testSMBShareLoader.UpdateButtons(false, null, null, true, "Cancel", new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							// Stop the ongoing task
+							testSMBShare.cancel(true);
+							Log.i("STORAGE", "User cancelled the SMB share test.");
+
+							// Re-enable the form
+							ToggleFormInputs(true);
+
+							// Close the loader
+							testSMBShareLoader.HideLoader();
+						}
+					});
+
                 	// Disable the form's inputs and buttons
-					getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-					deleteSMBShareButton.setClickable(false);
-					deleteSMBShareButton.setAlpha(0.5f);
-					titleEditText.setEnabled(false);
-					domainEditText.setEnabled(false);
-					usernameEditText.setEnabled(false);
-					passwordEditText.setEnabled(false);
-					addressEditText.setEnabled(false);
-					addSMBShareButton.setAlpha(0.5f);
-					addSMBShareButton.setClickable(false);
+					ToggleFormInputs(false);
 
                 	// Assemble the SMB credentials
 					NtlmPasswordAuthentication SMBShareAuthentication = new NtlmPasswordAuthentication(domainEditText.getText().toString(), usernameEditText.getText().toString(), passwordEditText.getText().toString());
@@ -372,6 +380,22 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 		}
 	}
 
+	// Function to enable or disable the form inputs
+	public void ToggleFormInputs(boolean enabled)
+	{
+		// Enable the form's inputs and buttons
+		getSupportActionBar().setDisplayHomeAsUpEnabled(enabled);
+		deleteSMBShareButton.setClickable(enabled);
+		deleteSMBShareButton.setAlpha(enabled ? 1 : 0.5f);
+		titleEditText.setEnabled(enabled);
+		domainEditText.setEnabled(enabled);
+		usernameEditText.setEnabled(enabled);
+		passwordEditText.setEnabled(enabled);
+		addressEditText.setEnabled(enabled);
+		addSMBShareButton.setAlpha(enabled ? 1 : 0.5f);
+		addSMBShareButton.setClickable(enabled);
+	}
+
 	@Override
 	public void TestCompleted(String testResult)
 	{
@@ -379,16 +403,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 		testSMBShareLoader.HideLoader();
 
 		// Enable the form's inputs and buttons
-		//activityToolbar.button
-		deleteSMBShareButton.setClickable(true);
-		deleteSMBShareButton.setAlpha(1);
-		titleEditText.setEnabled(true);
-		domainEditText.setEnabled(true);
-		usernameEditText.setEnabled(true);
-		passwordEditText.setEnabled(true);
-		addressEditText.setEnabled(true);
-		addSMBShareButton.setAlpha(1);
-		addSMBShareButton.setClickable(true);
+		ToggleFormInputs(true);
 
 		// Check if the test completed successfully
 		switch(testResult)
