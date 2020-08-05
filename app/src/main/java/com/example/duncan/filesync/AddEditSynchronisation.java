@@ -30,17 +30,17 @@ import java.util.List;
 public class AddEditSynchronisation extends AppCompatActivity
 {
 	// Request codes
-	private int REQUEST_CODE_SELECT_SOURCE_FOLDER_LOCAL = 100;
-	private int REQUEST_CODE_SELECT_TARGET_FOLDER_LOCAL = 101;
-	private int REQUEST_CODE_SELECT_SOURCE_FOLDER_SMB = 110;
-	private int REQUEST_CODE_SELECT_TARGET_FOLDER_SMB = 111;
+	private final int REQUEST_CODE_SELECT_SOURCE_FOLDER_LOCAL = 100;
+	private final int REQUEST_CODE_SELECT_TARGET_FOLDER_LOCAL = 101;
+	private final int REQUEST_CODE_SELECT_SOURCE_FOLDER_SMB = 110;
+	private final int REQUEST_CODE_SELECT_TARGET_FOLDER_SMB = 111;
 
 	// Miscellaneous variables
 	private Uri sourceFolder = null;
 	private Uri targetFolder;
 	private int modifyingSynchronisation = -1;
 	private JSONArray SMBShareArray;
-	private List<String> SMBShareList = new ArrayList<String>();
+	private List<String> SMBShareList = new ArrayList<>();
 	private SharedPreferences myPreferences;
 
 	// Form inputs
@@ -67,15 +67,11 @@ public class AddEditSynchronisation extends AppCompatActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
+		if (item.getItemId() == android.R.id.home)
 		{
-			case android.R.id.home:
-			{
-				// Finish the activity, returning to the calling one
-				finish();
-				overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
-				break;
-			}
+			// Finish the activity, returning to the calling one
+			finish();
+			overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 		}
 		return true;
 	}
@@ -147,7 +143,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 
 		// Update the SMB drop-downs
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, SMBShareList);
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SMBShareList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		sourceSMBSpinner.setAdapter(adapter);
 		targetSMBSpinner.setAdapter(adapter);
@@ -157,7 +153,10 @@ public class AddEditSynchronisation extends AppCompatActivity
 		// Initialise the toolbar
 		Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(getSupportActionBar() != null)
+		{
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		// When the source type is changed
 		sourceTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -636,7 +635,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 	private void ValidateTitle()
 	{
 		// Validate the input
-		if(jobTitleEditText.getText().toString().length() <= 0 || jobTitleEditText.getText().toString() == "")
+		if(jobTitleEditText.getText().toString().length() <= 0 || jobTitleEditText.getText().toString().equals(""))
 		{
 			jobTitleContainer.setError("Please enter a title.");
 		}

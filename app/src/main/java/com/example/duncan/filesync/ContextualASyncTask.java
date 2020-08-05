@@ -39,7 +39,7 @@ public class ContextualASyncTask extends AsyncTask
 	private ArrayList<AnalysedFile> deletedFileList;
 
 	// Deletion policies
-	private int DELETION_POLICY_PERFECT_COPY = 0;
+	private final int DELETION_POLICY_PERFECT_COPY = 0;
 
 	public ContextualInterface callingActivityInterface;
 
@@ -73,9 +73,9 @@ public class ContextualASyncTask extends AsyncTask
 			try
 			{
 
-				addedFileList = new ArrayList<AnalysedFile>();
-				updatedFilesList = new ArrayList<AnalysedFile>();
-				deletedFileList = new ArrayList<AnalysedFile>();
+				addedFileList = new ArrayList<>();
+				updatedFilesList = new ArrayList<>();
+				deletedFileList = new ArrayList<>();
 
 				Log.i("STORAGE", "Calling SynchroniseFolders with " + globalTargetFolder);
 				SynchroniseFolders(globalSourceCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalSourceFolder)), globalSourceFolder, globalSourceCredentials, globalTargetCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalTargetFolder)), globalTargetFolder, globalTargetCredentials, performTransfer);
@@ -90,7 +90,6 @@ public class ContextualASyncTask extends AsyncTask
 				else
 				{
 					// Log details of the exception and return its message
-					Log.i("STORAGE", "Exxxxxceptional");
 					exception.printStackTrace();
 					callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
 				}

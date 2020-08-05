@@ -14,7 +14,7 @@
         android:orientation="horizontal">
 
     <ImageView android:id="@+id/smbFileFolderIcon"
-        android:contentDescription="folder icon"
+        android:contentDescription="@string/smb_folder_list_item_folder_icon_description"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -23,7 +23,6 @@
     </ImageView>
 
     <TextView
-        android:text="Sample item"
         android:id="@+id/smbFileFolderTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

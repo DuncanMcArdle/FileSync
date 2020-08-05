@@ -18,7 +18,7 @@
 
 
         <Button android:id="@+id/SMBBrowserUpFolderButton"
-            android:text="Folder up"
+            android:text="@string/smb_browser_folder_up_text"
             android:layout_gravity="right"
             android:background="@color/colorPrimary"
             android:textColor="@color/white"
@@ -34,13 +34,12 @@
         android:padding="10dp">
         <TextView
             android:textStyle="bold"
-            android:text="Path:"
+            android:text="@string/smb_browser_path_prefix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"></TextView>
+            android:textSize="15sp" />
 
         <TextView
-            android:text="testing/123somewhere"
             android:id="@+id/SMBBrowserCurrentPath"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +49,8 @@
     <ListView android:id="@+id/SMBBrowserListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        tools:ignore="InefficientWeight" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,7 +63,7 @@
             android:layout_height="45dp"
             android:background="@color/colorPrimary"
             android:textColor="#FFFFFF"
-            android:text="Select folder"
+            android:text="@string/smb_browser_select_folder_text"
             android:padding="10dp" />
 
     </LinearLayout>

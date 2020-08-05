@@ -26,7 +26,7 @@
 
             <Button android:id="@+id/deleteSMBShare"
                 android:visibility="gone"
-                android:text="Delete"
+                android:text="@string/add_edit_smb_share_delete_button"
                 android:layout_gravity="right"
                 android:background="@color/red"
                 android:textColor="@color/white"
@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:textSize="16sp"
-                        android:text="Title:"/>
+                        android:text="@string/add_edit_smb_share_title_input_title"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/smbShareTitleEditTextLayout"
@@ -65,8 +65,10 @@
                         <EditText android:id="@+id/smbShareTitleEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Choose a memorable title."
-                            android:maxLines="1" />
+                            android:hint="@string/add_edit_smb_share_title_input_hint"
+                            android:maxLines="1"
+                            android:inputType="text"
+                            tools:ignore="Autofill" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -83,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:text="Domain:"/>
+                    android:text="@string/add_edit_smb_share_domain_input_title"/>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/smbShareDomainEditTextLayout"
@@ -96,8 +98,10 @@
                     <EditText android:id="@+id/smbShareDomainEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Domain (optional)"
-                        android:maxLines="1" />
+                        android:hint="@string/add_edit_smb_share_domain_input_hint"
+                        android:maxLines="1"
+                        android:inputType="text"
+                        tools:ignore="Autofill" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -114,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:text="Username:"/>
+                    android:text="@string/add_edit_smb_share_username_input_title"/>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/smbShareUsernameEditTextLayout"
@@ -127,8 +131,10 @@
                     <EditText android:id="@+id/smbShareUsernameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Username"
-                        android:maxLines="1" />
+                        android:hint="@string/add_edit_smb_share_username_input_hint"
+                        android:maxLines="1"
+                        android:inputType="text"
+                        tools:ignore="Autofill" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -145,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:text="Password:"/>
+                    android:text="@string/add_edit_smb_share_password_input_title"/>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/smbSharePasswordEditTextLayout"
@@ -158,8 +164,10 @@
                     <EditText android:id="@+id/smbSharePasswordEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Password"
-                        android:maxLines="1" />
+                        android:hint="@string/add_edit_smb_share_password_input_hint"
+                        android:maxLines="1"
+                        android:inputType="text"
+                        tools:ignore="Autofill" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -176,7 +184,7 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:text="SMB address:"/>
+                    android:text="@string/add_edit_smb_share_smb_address_title"/>
 
                 <android.support.design.widget.TextInputLayout
                     android:id="@+id/smbShareAddressEditTextLayout"
@@ -194,13 +202,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="smb://"/>
+                            android:text="@string/add_edit_smb_share_smb_input_prefix"/>
 
                     <EditText android:id="@+id/smbShareAddressEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="192.168.1.100/Media/Photos"
-                        android:maxLines="1" />
+                        android:hint="@string/add_edit_smb_share_smb_input_hint"
+                        android:maxLines="1"
+                        android:inputType="text"
+                        tools:ignore="Autofill" />
 
                     </LinearLayout>
 

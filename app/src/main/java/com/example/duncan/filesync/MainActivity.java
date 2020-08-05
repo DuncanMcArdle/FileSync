@@ -1,6 +1,7 @@
 package com.example.duncan.filesync;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -30,9 +31,6 @@ import jcifs.smb.NtlmPasswordAuthentication;
 
 public class MainActivity extends AppCompatActivity implements ContextualASyncTask.ContextualInterface
 {
-
-	Uri sourceFile;
-	private static final byte[] buffer = new byte[60416];
 	private SharedPreferences myPreferences;
 	private SharedPreferences.Editor myPrefsEdit;
 	private CustomAdapter synchronisationListAdapter;
@@ -51,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	private long dataToSynchronise;
 
 	// Request codes
-	private int REQUEST_CODE_ADD_SYNCHRONISATION = 1000;
-	private int REQUEST_CODE_EDIT_SYNCHRONISATION = 1001;
+	private final int REQUEST_CODE_ADD_SYNCHRONISATION = 1000;
+	private final int REQUEST_CODE_EDIT_SYNCHRONISATION = 1001;
 
 	// Array of synchronisation jobs
 	private JSONArray synchronisationArray = null;
@@ -60,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	// Loader
 	private Loader syncLoader;
 
+	@SuppressLint("CommitPrefEdits")
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		LoadSynchronisations();
 
 		// Populate the ListView with the retrieved synchronisations
-		ListView listView = (ListView) findViewById(R.id.customListView);
+		ListView listView = findViewById(R.id.customListView);
 		synchronisationListAdapter = new CustomAdapter();
 		listView.setAdapter(synchronisationListAdapter);
 
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 256);
 
 		// When the user clicks the "ADD SYNCHRONISATION" button
-		Button addSynchronisationButton = (Button) findViewById(R.id.addSynchronisation);
+		Button addSynchronisationButton = findViewById(R.id.addSynchronisation);
 		addSynchronisationButton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -108,17 +107,14 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 			@Override
 			public boolean onMenuItemClick(MenuItem item)
 			{
-				switch (item.getItemId())
+				// When the user selects the "MANAGE SMB SHARES" option
+				if (item.getItemId() == R.id.main_activity_menu_manage_smb_shares)
 				{
-					// When the user selects the "MANAGE SMB SHARES" option
-					case R.id.main_activity_menu_manage_smb_shares:
-					{
-						// Create and start an intent to open the Manage SMB Credentials activity
-						Intent manageSMBCredentialsIntent = new Intent(MainActivity.this, ManageSMBShares.class);
-						startActivity(manageSMBCredentialsIntent);
-						overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
-						return true;
-					}
+					// Create and start an intent to open the Manage SMB Credentials activity
+					Intent manageSMBCredentialsIntent = new Intent(MainActivity.this, ManageSMBShares.class);
+					startActivity(manageSMBCredentialsIntent);
+					overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
+					return true;
 				}
 
 				Log.i("STORAGE", "Menu item clicked");
@@ -230,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	private void LoadSynchronisations()
 	{
 		// Obtain a reference to the ListView's loading text
-		TextView listViewLoader = (TextView) findViewById(R.id.listViewLoader);
+		TextView listViewLoader = findViewById(R.id.listViewLoader);
 
 		try
 		{
@@ -241,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 			if (synchronisationArray.length() <= 0)
 			{
 				// If not, append a notice to the list of synchronisations
-				listViewLoader.setText("No synchronisations to show.");
+				listViewLoader.setText(R.string.main_list_no_syncs);
 				listViewLoader.setVisibility(View.VISIBLE);
 			}
 			else
@@ -253,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		catch (Exception e)
 		{
 			// Append a notice to the list of synchronisations
-			listViewLoader.setText("An error occurred when loading your synchronisations.");
+			listViewLoader.setText(R.string.main_list_error);
 			e.printStackTrace();
 		}
 	}
@@ -284,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		lastPercentCompleted = percentageComplete;
 	}
 
-	// Function called when a synchronisation fails to coplete
+	// Function called when a synchronisation fails to complete
 	@Override
 	public void OnSynchronisationFailed(final String error)
 	{
@@ -309,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					}
 					case "MANUALLY_CANCELLED":
 					{
-						Log.i("STORAGE", "Yuhguh");
 						syncLoader.ShowLoaderWithIcon("Cancelled synchronisation", R.drawable.ic_highlight_off_black_24dp, "The synchronisation was manually cancelled. Files may have been left in a part-synchronised state.");
 						break;
 					}
@@ -364,17 +359,17 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		{
 			convertView = View.inflate(getApplicationContext(), R.layout.synchronisation_listitem, null);
 
-			TextView jobTitle = (TextView) convertView.findViewById(R.id.jobTitle);
+			TextView jobTitle = convertView.findViewById(R.id.jobTitle);
 			try
 			{
-				jobTitle.setText(synchronisationArray.getJSONObject(position).getString("Title").toString());
+				jobTitle.setText(synchronisationArray.getJSONObject(position).getString("Title"));
 			} catch (Exception e)
 			{
 				e.printStackTrace();
 			}
 
 			// Assign an action to the "Run" button
-			Button runButton = (Button) convertView.findViewById(R.id.runJobButton);
+			Button runButton = convertView.findViewById(R.id.runJobButton);
 			runButton.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
@@ -427,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 			});
 
 			// Assign an action to the "Edit" button
-			Button editButton = (Button) convertView.findViewById(R.id.editJobButton);
+			Button editButton = convertView.findViewById(R.id.editJobButton);
 			editButton.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
@@ -517,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	private JSONArray SortJSONArray(JSONArray arrayToSort, final String attributeToSort) throws JSONException
 	{
 		// Convert the JSON Array to a list of JSON objects (so it can be sorted)
-		List<JSONObject> jsonList = new ArrayList<JSONObject>();
+		List<JSONObject> jsonList = new ArrayList<>();
 		for (int i = 0; i < arrayToSort.length(); i++)
 		{
 			jsonList.add(arrayToSort.getJSONObject(i));

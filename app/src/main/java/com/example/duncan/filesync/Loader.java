@@ -23,7 +23,6 @@ import java.util.Locale;
 public class Loader
 {
 	private AlertDialog.Builder alertDialogBuilder;
-	private LayoutInflater layoutInflater;
 	private Context context;
 	private AlertDialog alertDialog;
 
@@ -42,7 +41,6 @@ public class Loader
 		Log.i("STORAGE", "Loader called");
 
 		context = passedInContext;
-		layoutInflater = passedInLayoutInflater;
 		alertDialogBuilder = new AlertDialog.Builder(context);
 
 		// Setup the loader
@@ -54,7 +52,7 @@ public class Loader
 		// Show the dialog
 		alertDialog.show();
 
-		// Obtain references to the listviews and their titles
+		// Obtain references to the ListViews and their titles
 		addedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
 		addedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesAddedListView);
 		updatedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
@@ -105,7 +103,7 @@ public class Loader
 	public void UpdateTitle(String loaderTitle)
 	{
 		// Set the loader's contents
-		TextView progressBarTitle = (TextView) alertDialog.findViewById(R.id.loaderTitle);
+		TextView progressBarTitle = alertDialog.findViewById(R.id.loaderTitle);
 		progressBarTitle.setText(loaderTitle);
 	}
 
@@ -141,8 +139,8 @@ public class Loader
 
 		// Update the progress bar elements
 		progressBar.setProgress(progress);
-		progressBarPercentage.setText(progress+"%");
-		progressBarFileNumber.setText((filesProcessed + 1)+" of "+totalFiles);
+		progressBarPercentage.setText(String.format(Locale.UK, "%d%%", progress));
+		progressBarFileNumber.setText(String.format(Locale.UK, "%d of %d", filesProcessed + 1, totalFiles));
 		progressBarFileName.setText(currentFileName == null ? "" : currentFileName);
 		progressBar.setVisibility(View.VISIBLE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.VISIBLE);
@@ -198,9 +196,9 @@ public class Loader
 		addedFilesListViewShow.setVisibility(View.GONE);
 		updatedFilesListViewShow.setVisibility(View.GONE);
 		deletedFilesListViewShow.setVisibility(View.GONE);
-		addedFilesTitle.setText("(show)");
-		updatedFilesTitle.setText("(show)");
-		deletedFilesTitle.setText("(show)");
+		addedFilesTitle.setText(R.string.loader_show);
+		updatedFilesTitle.setText(R.string.loader_show);
+		deletedFilesTitle.setText(R.string.loader_show);
 
 		// Check if any files were added
 		if(addedFileList.size() > 0)
@@ -406,8 +404,8 @@ public class Loader
 			}
 
 			AnalysedFile currentFile = (AnalysedFile) getItem(position);
-			TextView fileNumber = (TextView) convertView.findViewById(R.id.fileNumber);
-			TextView fileName = (TextView) convertView.findViewById(R.id.fileName);
+			TextView fileNumber = convertView.findViewById(R.id.fileNumber);
+			TextView fileName = convertView.findViewById(R.id.fileName);
 
 			// URL decode the file's path
 			String decodedPath = null;
@@ -424,8 +422,8 @@ public class Loader
 
 			Log.i("STORAGE", "Final path segment: "+finalPathSegment);
 			Log.i("STORAGE", "File name: "+currentFile.fileName);
-			fileNumber.setText((position + 1)+". ");
-			fileName.setText(finalPathSegment+"/"+currentFile.fileName+" ("+(currentFile.isAFolder ? "folder" : HumanReadableByteCount(currentFile.fileSize, true))+")");
+			fileNumber.setText(String.format(Locale.UK, "%d. ", position + 1));
+			fileName.setText(String.format(Locale.UK, "%s/%s (%s)", finalPathSegment, currentFile.fileName, currentFile.isAFolder ? "folder" : HumanReadableByteCount(currentFile.fileSize, true)));
 
 			return convertView;
 		}

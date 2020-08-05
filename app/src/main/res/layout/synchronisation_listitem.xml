@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:padding="10dp"
@@ -13,7 +14,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
         <TextView android:id="@+id/jobTitle"
-            android:text="Sample item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -37,7 +37,8 @@
                 android:layout_marginRight="10dp"
                 android:background="@color/colorPrimary"
                 android:textColor="#FFFFFF"
-                android:text="Run..." />
+                android:text="@string/synchronisation_list_item_run_button_text"
+                tools:ignore="ButtonStyle" />
 
             <Button
                 android:id="@+id/editJobButton"
@@ -45,7 +46,8 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
                 android:textColor="#FFFFFF"
-                android:text="Edit" />
+                android:text="@string/synchronisation_list_item_edit_button_text"
+                tools:ignore="ButtonStyle" />
 
         </LinearLayout>
 

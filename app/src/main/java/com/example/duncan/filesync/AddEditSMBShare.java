@@ -24,7 +24,6 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 {
     // Miscellaneous variables
     private int modifyingSMBShare = -1;
-	private Toolbar activityToolbar;
 	private Loader testSMBShareLoader;
 	private TestSMBShare testSMBShare;
 	private String originalTitle = "";
@@ -48,15 +47,11 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
+		if (item.getItemId() == android.R.id.home)
 		{
-			case android.R.id.home:
-			{
-				// Finish the activity, returning to the calling one
-				finish();
-				overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
-				break;
-			}
+			// Finish the activity, returning to the calling one
+			finish();
+			overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 		}
 		return true;
 	}
@@ -126,9 +121,12 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 		});
 
         // Initialise the toolbar
-        activityToolbar = findViewById(R.id.my_toolbar);
+		Toolbar activityToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(activityToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null)
+		{
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
         // Check if an SMB share is being edited
         Intent addSMBShareIntent = getIntent();
@@ -341,7 +339,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
     private void ValidateUsername()
     {
         // Validate the input
-        if(usernameEditText.getText().toString().length() <= 0 || usernameEditText.getText().toString() == "")
+        if(usernameEditText.getText().toString().length() <= 0 || usernameEditText.getText().toString().equals(""))
         {
             usernameEditTextContainer.setError("Please enter a username.");
         }
@@ -355,7 +353,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	private void ValidatePassword()
 	{
 		// Validate the input
-		if(passwordEditText.getText().toString().length() <= 0 || passwordEditText.getText().toString() == "")
+		if(passwordEditText.getText().toString().length() <= 0 || passwordEditText.getText().toString().equals(""))
 		{
 			passwordEditTextContainer.setError("Please enter a password.");
 		}
@@ -369,7 +367,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	private void ValidateSMBAddress()
 	{
 		// Validate the input
-		if(addressEditText.getText().toString().length() <= 0 || addressEditText.getText().toString() == "")
+		if(addressEditText.getText().toString().length() <= 0 || addressEditText.getText().toString().equals(""))
 		{
 			addressEditTextContainer.setError("Please enter an SMB address.");
 		}
@@ -383,8 +381,6 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	// Function to enable or disable the form inputs
 	private void ToggleFormInputs(boolean enabled)
 	{
-		// Enable the form's inputs and buttons
-		getSupportActionBar().setDisplayHomeAsUpEnabled(enabled);
 		deleteSMBShareButton.setClickable(enabled);
 		deleteSMBShareButton.setAlpha(enabled ? 1 : 0.5f);
 		titleEditText.setEnabled(enabled);
@@ -447,37 +443,37 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 			}
 			case "AUTHENTICATION":
 			{
-				smbShareResult.setText("Invalid SMB credentials, please try again.");
+				smbShareResult.setText(R.string.add_edit_smb_share_error_smb_credentials);
 				smbShareResult.setVisibility(View.VISIBLE);
 				break;
 			}
 			case "SMB_EXCEPTION":
 			{
-				smbShareResult.setText("An SMB error occurred when attempting to connect to the SMB share, please try again.");
+				smbShareResult.setText(R.string.add_edit_smb_share_error_smb_exception);
 				smbShareResult.setVisibility(View.VISIBLE);
 				break;
 			}
 			case "MALFORMED_URL_EXCEPTION":
 			{
-				smbShareResult.setText("A URL error occurred when attempting to connect to the SMB share, please try again.");
+				smbShareResult.setText(R.string.add_edit_smb_share_error_malformed_url);
 				smbShareResult.setVisibility(View.VISIBLE);
 				break;
 			}
 			case "UNKNOWN_HOST_EXCEPTION":
 			{
-				smbShareResult.setText("Unable to connect to the SMB host. Ensure the address field is correct and then try again.");
+				smbShareResult.setText(R.string.add_edit_smb_share_error_unknown_host);
 				smbShareResult.setVisibility(View.VISIBLE);
 				break;
 			}
 			case "UNKNOWN_EXCEPTION":
 			{
-				smbShareResult.setText("An unknown error occurred when attempting to connect to the SMB share, please try again.");
+				smbShareResult.setText(R.string.add_edit_smb_share_error_unknown);
 				smbShareResult.setVisibility(View.VISIBLE);
 				break;
 			}
 			default:
 			{
-				smbShareResult.setText("An unexpected error occurred when attempting to connect to the SMB share, please try again.");
+				smbShareResult.setText(R.string.add_edit_smb_share_error_default);
 				smbShareResult.setVisibility(View.VISIBLE);
 				break;
 			}

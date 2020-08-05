@@ -13,7 +13,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android">
 
         <TextView android:id="@+id/smbFileFolderTitle"
-            android:text="Sample item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -37,7 +36,7 @@
                 android:layout_marginRight="10dp"
                 android:background="@color/colorPrimary"
                 android:textColor="#FFFFFF"
-                android:text="Edit" />
+                android:text="@string/smb_share_list_item_button_text" />
 
         </LinearLayout>
 
