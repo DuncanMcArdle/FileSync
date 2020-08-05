@@ -67,6 +67,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		// Clicking the back button at the top-left
 		if (item.getItemId() == android.R.id.home)
 		{
 			// Finish the activity, returning to the calling one
@@ -207,18 +208,21 @@ public class AddEditSynchronisation extends AppCompatActivity
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId)
 			{
+				// Reset the "browse" area
+				targetFolderEditText.setText("");
+				targetFolderEditText.setHint("Please browse to a source.");
+				targetFolderEditTextContainer.setError("");
+				targetFolderEditTextContainer.setErrorEnabled(false);
+
 				// If the target type is local
 				if(checkedId == R.id.targetTypeLocal)
 				{
-					// Reset the "browse" area
-					EditText targetEditText = findViewById(R.id.targetEditText);
-					targetEditText.setText("");
-					targetEditText.setHint("Please browse to a source.");
-					findViewById(R.id.targetBrowse).setEnabled(true);
-
 					// Hide the SMB selection area
 					LinearLayout targetSMBShareSection = findViewById(R.id.targetSMBSection);
 					targetSMBShareSection.setVisibility(View.GONE);
+
+					// Enable the browse button
+					targetBrowseButton.setEnabled(true);
 				}
 				// If the source type is an SMB share
 				else if(checkedId == R.id.targetTypeNetwork)
@@ -226,6 +230,9 @@ public class AddEditSynchronisation extends AppCompatActivity
 					// Show the SMB selection area
 					LinearLayout targetSMBShareSection = findViewById(R.id.targetSMBSection);
 					targetSMBShareSection.setVisibility(View.VISIBLE);
+
+					// Disable the browse button (SMB must be selected first)
+					targetBrowseButton.setEnabled(false);
 				}
 
 				// Show the target folder selection area
@@ -306,13 +313,8 @@ public class AddEditSynchronisation extends AppCompatActivity
 			// Check if the source is SMB based
 			if(sourceTypeRadioGroup.getCheckedRadioButtonId() == R.id.sourceTypeNetwork)
 			{
-				Log.i("STORAGE", "Source SMB Share: '"+addSynchronisationIntent.getStringExtra("SourceSMBShare")+"'");
 				// If so, select the relevant SMB share
 				SelectSMBShare(sourceSMBSpinner, addSynchronisationIntent.getStringExtra("SourceSMBShare"));
-			}
-			else
-			{
-				Log.i("STORAGE", "Network option is not selected");
 			}
 
 			// Check if the target is SMB based
@@ -394,9 +396,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 			@Override
 			public void onClick(View v)
 			{
-				Log.i("STORAGE", "Source type local: "+findViewById(R.id.sourceTypeLocal).isSelected());
-				Log.i("STORAGE", "Source type SMB: "+findViewById(R.id.sourceTypeNetwork).isSelected());
-
 				// Check if it's a "local" browse
 				if(sourceTypeRadioGroup.getCheckedRadioButtonId() == R.id.sourceTypeLocal)
 				{
@@ -410,8 +409,6 @@ public class AddEditSynchronisation extends AppCompatActivity
 				{
 					try
 					{
-						Log.i("STORAGE", "Sending '"+sourceFolderEditText.getText()+"'");
-
 						// Open an SMB browser
 						Intent intent = new Intent(AddEditSynchronisation.this, SMBBrowser.class);
 						intent.putExtra("SMB_JSON", SMBShareArray.getJSONObject(sourceSMBSpinner.getSelectedItemPosition() - 1).toString());
@@ -495,19 +492,15 @@ public class AddEditSynchronisation extends AppCompatActivity
 					targetFolderEditTextContainer.setError("Please select a target folder.");
 				}
 
-				// Check if any errors are on display
-				if(		jobTitleContainer.isErrorEnabled() ||
-						sourceTypeRadioGroupErrorContainer.getVisibility() == View.VISIBLE ||
-						sourceSMBErrorContainer.getVisibility() == View.VISIBLE ||
-						sourceFolderEditTextContainer.isErrorEnabled() ||
-						targetTypeRadioGroupErrorContainer.getVisibility() == View.VISIBLE ||
-						targetSMBErrorContainer.getVisibility() == View.VISIBLE ||
-						targetFolderEditTextContainer.isErrorEnabled())
-				{
-					// If so, notify the user
-					Log.i("STORAGE", "ERROR ON DISPLAY");
-				}
-				else
+				// Ensure there are no errors on display
+				if(		!jobTitleContainer.isErrorEnabled() &&
+						sourceTypeRadioGroupErrorContainer.getVisibility() != View.VISIBLE &&
+						sourceSMBErrorContainer.getVisibility() != View.VISIBLE &&
+						!sourceFolderEditTextContainer.isErrorEnabled() &&
+						targetTypeRadioGroupErrorContainer.getVisibility() != View.VISIBLE &&
+						targetSMBErrorContainer.getVisibility() != View.VISIBLE &&
+						!targetFolderEditTextContainer.isErrorEnabled()
+				)
 				{
 					// Prepare the new job's details to be returned
 					Intent activityResult = new Intent();
@@ -565,10 +558,8 @@ public class AddEditSynchronisation extends AppCompatActivity
 	{
 		for(int i = 0; i < SMBShareList.size(); i++)
 		{
-			Log.i("STORAGE", "Comparing '"+shareTitle+"' with '"+SMBShareList.get(i)+"'");
 			if(shareTitle.equals(SMBShareList.get(i)))
 			{
-				Log.i("STORAGE", "Found, setting '"+targetSpinner.toString()+"' to '"+i+"'");
 				targetSpinner.setSelection(i);
 				break;
 			}
@@ -632,6 +623,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 	}
 
+	// Validate the title of a synchronisation
 	private void ValidateTitle()
 	{
 		// Validate the input
@@ -665,14 +657,17 @@ public class AddEditSynchronisation extends AppCompatActivity
 				e.printStackTrace();
 			}
 
+			// If no duplicate synchronisation titles were found
 			if(!foundDuplicateTitle)
 			{
+				// Hide any errors (allows the form to be submitted)
 				jobTitleContainer.setError("");
 				jobTitleContainer.setErrorEnabled(false);
 			}
 		}
 	}
 
+	// Validate the source / target type radio group of a synchronisation
 	private void ValidateRadioGroup(RadioGroup radioGroup, LinearLayout radioGroupErrorContainer)
 	{
 		// Check if an option was selected
@@ -688,6 +683,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 	}
 
+	// Validate the SMB share of a synchronisation
 	private void ValidateSMBSelection(Spinner SMBSpinner, LinearLayout SMBSpinnerErrorContainer)
 	{
 		// Check if the SMB share selection required validation

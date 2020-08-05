@@ -61,8 +61,6 @@ public class SMBBrowser extends AppCompatActivity
 			@Override
 			public void onClick(View v)
 			{
-				Log.i("STORAGE", "User selected '"+currentPath+"'");
-
 				// Prepare the new job's details to be returned
 				Intent activityResult = new Intent();
 				activityResult.putExtra("PATH", currentPath);
@@ -93,9 +91,6 @@ public class SMBBrowser extends AppCompatActivity
 			currentPath = SMBBrowserIntent.getStringExtra("PATH");
 			SMBShareAuthentication = new NtlmPasswordAuthentication(SMBJSONObject.getString("Domain"), SMBJSONObject.getString("Username"), SMBJSONObject.getString("Password"));
 			SMB_URL = "smb://"+SMBJSONObject.getString("Address");
-			Log.i("STORAGE", "Set SMB URL to "+ SMB_URL);
-
-			Log.i("STORAGE", "Current path set to '"+currentPath+"'");
 
 			// Display the folder
 			DisplayFolder(SMBShareAuthentication, currentPath);
@@ -135,8 +130,6 @@ public class SMBBrowser extends AppCompatActivity
 
 	private void DisplayFolder(NtlmPasswordAuthentication authentication, String targetPath)
 	{
-		Log.i("STORAGE", "Loading "+ SMB_URL +targetPath);
-
 		try
 		{
 			new FetchSMBFolder(targetPath).execute().get();
@@ -212,7 +205,6 @@ public class SMBBrowser extends AppCompatActivity
 						@Override
 						public void onClick(View v)
 						{
-							Log.i("STORAGE", "Selected folder: "+ fileFolderList.get(position).get(1));
 							DisplayFolder(SMBShareAuthentication, currentPath+"/"+ fileFolderList.get(position).get(1));
 						}
 					});
@@ -248,7 +240,6 @@ public class SMBBrowser extends AppCompatActivity
 				SmbFile testFile = new SmbFile(SMB_URL +targetPath+"/", SMBShareAuthentication);
 				testFile.setConnectTimeout(5000);
 				testFile.connect();
-				Log.i("STORAGE", "Connected successfully.");
 
 				// Initialise lists for the files and folders
 				List<List<String>> newFileFolderList = new ArrayList<>();
@@ -283,7 +274,6 @@ public class SMBBrowser extends AppCompatActivity
 
 
 				currentFolder = testFile.getName().substring(0, (testFile.getName().length() - 1));
-				Log.i("STORAGE", "Folder name: "+currentFolder);
 			}
 			catch(Exception e)
 			{

@@ -14,6 +14,7 @@ import jcifs.smb.SmbFile;
 
 public class TestSMBShare extends AsyncTask
 {
+	// Miscellaneous
 	private String SMBShareURL;
 	private NtlmPasswordAuthentication SMBShareAuthentication;
 	private String testResult;
@@ -45,7 +46,6 @@ public class TestSMBShare extends AsyncTask
         	SmbFile testFile = new SmbFile(SMBShareURL, SMBShareAuthentication);
         	testFile.connect();
 			testResult = "SUCCESS";
-			Log.i("STORAGE", "Connected successfully.");
 		}
         catch(SmbAuthException e)
 		{

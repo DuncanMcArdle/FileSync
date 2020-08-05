@@ -38,8 +38,6 @@ public class Loader
 
 	public Loader(Context passedInContext, LayoutInflater passedInLayoutInflater)
 	{
-		Log.i("STORAGE", "Loader called");
-
 		context = passedInContext;
 		alertDialogBuilder = new AlertDialog.Builder(context);
 
@@ -149,8 +147,6 @@ public class Loader
 	// Show the summary section
 	public void ShowLoaderWithFileTransferSummary(boolean performTransfer, int timeTaken, int filesTransferred, long dataTransferred, ArrayList<AnalysedFile> addedFileList, ArrayList<AnalysedFile> updatedFileList, ArrayList<AnalysedFile> deletedFileList)
 	{
-		Log.i("STORAGE", "ShowLoaderWithFileTransferSummary called");
-
 		// Hide the other sections
 		alertDialog.findViewById(R.id.loaderSpinner).setVisibility(View.GONE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.GONE);
@@ -191,8 +187,6 @@ public class Loader
 		filesDeletedTextView.setText(String.format(Locale.UK,"%,d", deletedFileList.size()));
 
 		// Minimise the file lists
-		// Show / Hide the target ListView (and update the associated button)
-
 		addedFilesListViewShow.setVisibility(View.GONE);
 		updatedFilesListViewShow.setVisibility(View.GONE);
 		deletedFilesListViewShow.setVisibility(View.GONE);
@@ -420,8 +414,7 @@ public class Loader
 			// Obtain the final segment of the URI
 			String finalPathSegment = decodedPath.substring(decodedPath.lastIndexOf(":") + 1);
 
-			Log.i("STORAGE", "Final path segment: "+finalPathSegment);
-			Log.i("STORAGE", "File name: "+currentFile.fileName);
+			// Set the file's remaining details
 			fileNumber.setText(String.format(Locale.UK, "%d. ", position + 1));
 			fileName.setText(String.format(Locale.UK, "%s/%s (%s)", finalPathSegment, currentFile.fileName, currentFile.isAFolder ? "folder" : HumanReadableByteCount(currentFile.fileSize, true)));
 

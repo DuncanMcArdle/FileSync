@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
-public class ContextualASyncTask extends AsyncTask
+public class SynchronisationASyncTask extends AsyncTask
 {
 	// Miscellaneous variables
 	private Context contextRef;
@@ -24,7 +24,7 @@ public class ContextualASyncTask extends AsyncTask
 	private String globalTargetFolder;
 	private NtlmPasswordAuthentication globalTargetCredentials;
 	private boolean performTransfer;
-	private int deletionPolicy;
+	public ContextualInterface callingActivityInterface;
 
 	// Synchronisation tracking variables
 	private int filesTransferred = 0;
@@ -40,14 +40,12 @@ public class ContextualASyncTask extends AsyncTask
 
 	// Deletion policies
 	private final int DELETION_POLICY_PERFECT_COPY = 0;
+	private int deletionPolicy;
 
-	public ContextualInterface callingActivityInterface;
-
-	public ContextualASyncTask(Context callingContext, String sourceFolderInput, NtlmPasswordAuthentication sourceCredentialsInput, String targetFolderInput, NtlmPasswordAuthentication targetCredentialsInput, int deletionPolicyInput, boolean performTransferInput)
+	public SynchronisationASyncTask(Context callingContext, String sourceFolderInput, NtlmPasswordAuthentication sourceCredentialsInput, String targetFolderInput, NtlmPasswordAuthentication targetCredentialsInput, int deletionPolicyInput, boolean performTransferInput)
 	{
-		contextRef = callingContext;
-
 		// Store the passed in data
+		contextRef = callingContext;
 		globalSourceFolder = sourceFolderInput;
 		globalSourceCredentials = sourceCredentialsInput;
 		globalTargetFolder = targetFolderInput;
@@ -64,6 +62,7 @@ public class ContextualASyncTask extends AsyncTask
 		{
 			callingActivityInterface.OnSynchronisationFailed("SOURCE_ACCESS");
 		}
+		// Test access to the synchronisation target
 		else if(!TestAccess(globalTargetCredentials, globalTargetFolder, true))
 		{
 			callingActivityInterface.OnSynchronisationFailed("TARGET_ACCESS");
@@ -72,19 +71,19 @@ public class ContextualASyncTask extends AsyncTask
 		{
 			try
 			{
-
+				// Initialise file lists
 				addedFileList = new ArrayList<>();
 				updatedFilesList = new ArrayList<>();
 				deletedFileList = new ArrayList<>();
 
-				Log.i("STORAGE", "Calling SynchroniseFolders with " + globalTargetFolder);
+				// Attempt to synchronise the folders
 				SynchroniseFolders(globalSourceCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalSourceFolder)), globalSourceFolder, globalSourceCredentials, globalTargetCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalTargetFolder)), globalTargetFolder, globalTargetCredentials, performTransfer);
-			} catch (Exception exception)
+			}
+			catch (Exception exception)
 			{
 				// Check if the synchronisation was manually cancelled
 				if(isCancelled())
 				{
-					Log.i("STORAGE", "User cancelled the task (during overall synchronisation)");
 					callingActivityInterface.OnSynchronisationFailed("MANUALLY_CANCELLED");
 				}
 				else
@@ -182,7 +181,6 @@ public class ContextualASyncTask extends AsyncTask
 				// Check if the synchronisation has been cancelled
 				if(isCancelled())
 				{
-					Log.i("STORAGE", "User cancelled the task (during file transfer)");
 					callingActivityInterface.OnSynchronisationFailed("MANUALLY_CANCELLED");
 					break;
 				}
@@ -199,21 +197,17 @@ public class ContextualASyncTask extends AsyncTask
 
 		// Increment the number of files copied
 		filesTransferred++;
-		Log.i("STORAGE", "File transfer complete");
 	}
 
 	// Function to synchronise two folders
 	private void SynchroniseFolders(DocumentFile sourceFolder, String sourceFolderPath, NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile targetFolder, String targetFolderPath, NtlmPasswordAuthentication targetFolderCredentials, boolean createFiles) throws IOException
 	{
-		Log.i("STORAGE", "SynchroniseFolders called on "+sourceFolderPath+" and "+targetFolderPath+" (targetFolder "+(targetFolder == null ? "is" : "is not")+" null");
-		Log.i("STORAGE", targetFolder == null ? "targetFolder is null" : "targetFolder is not null");
 		// If the source is local
 		if(sourceFolderCredentials == null)
 		{
 			// Loop through the source files
 			for (DocumentFile sourceFile : sourceFolder.listFiles())
 			{
-				Log.i("STORAGE", "checking local file " + sourceFile.getName());
 				SynchroniseFiles(sourceFolderCredentials, sourceFile, null, sourceFolderPath, targetFolderCredentials, targetFolder, targetFolderPath, createFiles);
 			}
 		}
@@ -226,7 +220,6 @@ public class ContextualASyncTask extends AsyncTask
 			// Loop through the source files
 			for (SmbFile sourceFile : targetSMBFolder.listFiles())
 			{
-				Log.i("STORAGE", "checking SMB file " + sourceFile.getName());
 				SynchroniseFiles(sourceFolderCredentials, null, sourceFile, sourceFolderPath, targetFolderCredentials, targetFolder, targetFolderPath, createFiles);
 			}
 		}
@@ -242,14 +235,10 @@ public class ContextualASyncTask extends AsyncTask
 	// Synchronise the contents of a source destination to a target destination
 	private void SynchroniseFiles(NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile sourceDocumentFile, SmbFile sourceSMBFile, String sourceFolderPath, NtlmPasswordAuthentication targetFolderCredentials, DocumentFile targetFolder, String targetFolderPath, boolean createFiles) throws IOException
 	{
-		Log.i("STORAGE", "SynchroniseFiles called on "+sourceFolderPath+" and "+targetFolderPath+" (targetFolder "+(targetFolder == null ? "is" : "is not")+" null");
-
 		// Obtain generic data regarding the source file
 		boolean sourceIsDirectory = sourceFolderCredentials == null ? sourceDocumentFile.isDirectory() : sourceSMBFile.isDirectory();
 		String sourceFileName = sourceFolderCredentials == null ? sourceDocumentFile.getName() : (sourceIsDirectory ? TrimTrailingSlash(sourceSMBFile.getName()) : sourceSMBFile.getName());
 		long sourceFileLength = sourceFolderCredentials == null ? sourceDocumentFile.length() : sourceSMBFile.length();
-
-		Log.i("STORAGE", "checking " + sourceFileName);
 
 		// Initialise and obtain the target file
 		DocumentFile targetDestinationFile = ((targetFolderCredentials != null || targetFolder == null) ? null : caseInsensitiveFindFile(sourceFileName, targetFolder));
@@ -271,7 +260,6 @@ public class ContextualASyncTask extends AsyncTask
 					if (targetFolderCredentials == null)
 					{
 						targetDestinationFile = targetFolder.createDirectory(sourceFileName);
-						Log.i("STORAGE", "targetFolder (sort of) set to "+targetDestinationFile.getUri().toString());
 					}
 					else
 					{
@@ -288,15 +276,13 @@ public class ContextualASyncTask extends AsyncTask
 			// Check if the file exists and is identical in the destination folder
 			if (targetFolderCredentials == null ? (targetDestinationFile != null && sourceFileLength == targetDestinationFile.length()) : (targetDestinationSMBFile.exists() && sourceFileLength == targetDestinationSMBFile.length()))
 			{
-				Log.i("STORAGE", "Files are the same, no need to replace (" + sourceFileName + " and " + (targetFolderCredentials == null ? targetDestinationFile.getName() : targetDestinationSMBFile.getName()) + ")");
+				// Files are the same, no need to replace
 			}
 			else
 			{
 				// Check if a non-identical file was found
 				if (targetFolderCredentials == null ? (targetDestinationFile != null) : (targetDestinationSMBFile.exists()))
 				{
-					Log.i("STORAGE", "Non-identical file found");
-
 					// Record the update
 					updatedFilesList.add(new AnalysedFile(sourceFileName, targetFolderPath, sourceFileLength, sourceIsDirectory));
 					updatedFilesSize += sourceFileLength;
@@ -304,7 +290,6 @@ public class ContextualASyncTask extends AsyncTask
 					// If the file needs to be deleted
 					if (createFiles)
 					{
-						Log.i("STORAGE", "Deleting non-identical file");
 						// Delete the existing file
 						if (targetFolderCredentials == null)
 						{
@@ -318,8 +303,6 @@ public class ContextualASyncTask extends AsyncTask
 				}
 				else
 				{
-					Log.i("STORAGE", "File not found");
-
 					// Record the addition
 					addedFileList.add(new AnalysedFile(sourceFileName, targetFolderPath, sourceFileLength, sourceIsDirectory));
 					addedFileSize += sourceFileLength;
@@ -328,8 +311,6 @@ public class ContextualASyncTask extends AsyncTask
 				// If the file needs to be created
 				if (createFiles)
 				{
-					Log.i("STORAGE", "Creating file");
-
 					// Initialise the transfer streams
 					BufferedInputStream inputStream = new BufferedInputStream(globalSourceCredentials == null ? contextRef.getContentResolver().openInputStream(sourceDocumentFile.getUri()) : new BufferedInputStream(sourceSMBFile.getInputStream()));
 					BufferedOutputStream outputStream;
@@ -354,8 +335,6 @@ public class ContextualASyncTask extends AsyncTask
 
 					// Copy the file
 					CopyBufferedFile(inputStream, outputStream, sourceFileName);
-
-					Log.i("STORAGE", "File created.");
 				}
 			}
 		}
@@ -364,20 +343,15 @@ public class ContextualASyncTask extends AsyncTask
 	// Delete files from the target folder that are not found in the source folder
 	private void DeleteSurplusTargetFiles(NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile sourceFolder, String sourceFolderPath, NtlmPasswordAuthentication destinationFolderCredentials, DocumentFile destinationFolder, String destinationFolderPath, boolean createFiles) throws IOException
 	{
-		Log.i("STORAGE", "DeleteSurplusTargetFiles called with "+sourceFolderPath+" and "+destinationFolderPath);
-
 		// If the destination is local and exists (this function may have been called after pre-check of a folder synchronisation)
 		if(destinationFolderCredentials == null && destinationFolder != null)
 		{
 			// Loop through the files in the destination folder
 			for (DocumentFile destinationFile : destinationFolder.listFiles())
 			{
-				Log.i("STORAGE", "Checking if "+destinationFile.getName()+" needs deleting.");
-
 				// Check if the file in question is not present in the source location
 				if ((sourceFolderCredentials == null && caseInsensitiveFindFile(destinationFile.getName(), sourceFolder) == null) || (sourceFolderCredentials != null && !new SmbFile("smb://" + sourceFolderPath + "/"+destinationFile.getName(), sourceFolderCredentials).exists()))
 				{
-					Log.i("STORAGE", "Deleting " + destinationFile.getName());
 					// Record the file to be deleted
 					deletedFileList.add(new AnalysedFile(destinationFile.getName(), destinationFolderPath, destinationFile.length(), destinationFile.isDirectory()));
 					deletedFileSize += destinationFile.length();
@@ -414,12 +388,9 @@ public class ContextualASyncTask extends AsyncTask
 					// Trim the file name (but only if it's a directory
 					String fileName = destinationFile.isDirectory() ? TrimTrailingSlash(destinationFile.getName()) : destinationFile.getName();
 
-					Log.i("STORAGE", "Checking if " + fileName + " needs deleting.");
-
 					// Check if the file in question is not present in the source location
 					if ((sourceFolderCredentials == null && caseInsensitiveFindFile(fileName, sourceFolder) == null) || (sourceFolderCredentials != null && !new SmbFile("smb://" + sourceFolderPath + "/" + destinationFile.getName(), sourceFolderCredentials).exists()))
 					{
-						Log.i("STORAGE", "Deleting " + destinationFile.getName()+" ("+destinationFolderPath+")");
 						// Record the file to be deleted
 						deletedFileList.add(new AnalysedFile(fileName, "smb://"+destinationFolderPath, destinationFile.length(), destinationFile.isDirectory()));
 						deletedFileSize += destinationFile.length();
@@ -486,9 +457,10 @@ public class ContextualASyncTask extends AsyncTask
 	// Function to case-insensitively find a DocumentFile
 	private DocumentFile caseInsensitiveFindFile(String fileName, DocumentFile folder)
 	{
-		Log.i("STORAGE", "caseInsensitiveFindFile called with "+folder.getUri().toString()+" and "+fileName);
+		// Loop through the folder's files
 		for (DocumentFile document : folder.listFiles())
 		{
+			// Check if the file matches the one being looked for
 			if (fileName.toUpperCase().equals(document.getName().toUpperCase()))
 			{
 				return document;
