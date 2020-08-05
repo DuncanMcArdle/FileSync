@@ -5,9 +5,32 @@
     <string name="add_edit_synchronisation_title_edit">Update synchronisation</string>
     <string name="add_edit_synchronisation_submit_button_add">Add synchronisation</string>
     <string name="add_edit_synchronisation_submit_button_edit">Update synchronisation</string>
-    <string name="title_activity_smbbrowser">SMB browser</string>
+    <string name="title_activity_smb_browser">SMB browser</string>
 
     <!-- Add / Edit synchronisation -->
+    <string name="add_edit_synchronisation_delete_button_text">Delete</string>
+    <string name="add_edit_synchronisation_title_input_title">Title:</string>
+    <string name="add_edit_synchronisation_title_input_hint">Choose a memorable title.</string>
+    <string name="add_edit_synchronisation_source_type_title">Source type:</string>
+    <string name="add_edit_synchronisation_source_type_local_text">Local (phone / SD card)</string>
+    <string name="add_edit_synchronisation_source_type_network_text">Network (SMB)</string>
+    <string name="add_edit_synchronisation_target_type_local_text">Local (phone / SD card)</string>
+    <string name="add_edit_synchronisation_target_type_network_text">Network (SMB)</string>
+    <string name="add_edit_synchronisation_source_type_error_text">Please select an option.</string>
+    <string name="add_edit_synchronisation_target_type_error_text">Please select an option.</string>
+    <string name="add_edit_synchronisation_source_smb_input_text">SMB share:</string>
+    <string name="add_edit_synchronisation_source_smb_error">Please select an SMB share.</string>
+    <string name="add_edit_synchronisation_source_local_input_text">Source folder:</string>
+    <string name="add_edit_synchronisation_source_local_input_error">Select a type first.</string>
+    <string name="add_edit_synchronisation_source_browse_text">Browse</string>
+    <string name="add_edit_synchronisation_target_type_title">Target type:</string>
+    <string name="add_edit_synchronisation_target_smb_text">SMB share:</string>
+    <string name="add_edit_synchronisation_target_smb_error">Please select an SMB share.</string>
+    <string name="add_edit_synchronisation_target_local_text">Target folder:</string>
+    <string name="add_edit_synchronisation_target_error">Select a type first.</string>
+    <string name="add_edit_synchronisation_additional_options_title">Additional options</string>
+    <string name="add_edit_synchronisation_deletion_policy_title">Deletion policy</string>
+    <string name="add_edit_synchronisation_deletion_policy_info">(info)</string>
 
     <!-- Manage SMB shares -->
     <string name="manage_smb_shares_title">Manage SMB shares</string>
@@ -18,11 +41,61 @@
     <string name="add_edit_share_title_edit">Update share</string>
     <string name="add_edit_share_submit_button_add">Add share</string>
     <string name="add_edit_share_submit_button_edit">Update share</string>
+    <string name="add_edit_smb_share_delete_button">Delete</string>
+    <string name="add_edit_smb_share_title_input_title">Title:</string>
+    <string name="add_edit_smb_share_title_input_hint">Choose a memorable title.</string>
+    <string name="add_edit_smb_share_domain_input_title">Domain:</string>
+    <string name="add_edit_smb_share_domain_input_hint">Domain (optional)</string>
+    <string name="add_edit_smb_share_username_input_title">Username:</string>
+    <string name="add_edit_smb_share_username_input_hint">Username</string>
+    <string name="add_edit_smb_share_password_input_title">Password:</string>
+    <string name="add_edit_smb_share_password_input_hint">Password</string>
+    <string name="add_edit_smb_share_smb_address_title">SMB address:</string>
+    <string name="add_edit_smb_share_smb_input_prefix">smb://</string>
+    <string name="add_edit_smb_share_smb_input_hint">192.168.1.100/Media/Photos</string>
+    <string name="main_title">Saved synchronisations</string>
+    <string name="main_loading_text">Loading list items…</string>
+    <string name="main_add_button_text">Add new synchronisation</string>
+    <string name="manage_smb_shares_delete_button_text">Delete</string>
+    <string name="manage_smb_shares_saved_credentials_title">Saved credentials</string>
+    <string name="manage_smb_shares_loading_text">Loading credentials…</string>
+    <string name="manage_smb_shares_add_button_text">Add new credential</string>
+    <string name="smb_browser_folder_up_text">Folder up</string>
+    <string name="smb_browser_path_prefix">Path:</string>
+    <string name="smb_browser_select_folder_text">Select folder</string>
+    <string name="loader_time_taken_title">Time taken:</string>
+    <string name="loader_files_transferred_title">Files transferred:</string>
+    <string name="loader_data_transferred_title">Data transferred:</string>
+    <string name="loader_files_added_title">Files added:</string>
+    <string name="loader_files_added_show_text">(show)</string>
+    <string name="loader_files_updated_show_text">(show)</string>
+    <string name="loader_files_deleted_show_text">(show)</string>
+    <string name="loader_files_deleted_title">Files deleted:</string>
+    <string name="loader_files_updated_title">Files updated</string>
+    <string name="loader_current_file_title">File:</string>
+    <string name="loader_image_description">loader icon</string>
+    <string name="activity_menu_manage_smb_shares">Manage SMB shares</string>
+    <string name="smb_folder_list_item_folder_icon_description">folder icon</string>
+    <string name="smb_share_list_item_button_text">Edit</string>
+    <string name="synchronisation_list_item_run_button_text">Run…</string>
+    <string name="synchronisation_list_item_edit_button_text">Edit</string>
+    <string name="add_edit_synchronisation_target_browse_button_text">Browse</string>
+    <string name="add_edit_smb_share_error_smb_credentials">Invalid SMB credentials, please try again.</string>
+    <string name="add_edit_smb_share_error_smb_exception">An SMB error occurred when attempting to connect to the SMB share, please try again.</string>
+    <string name="add_edit_smb_share_error_malformed_url">A URL error occurred when attempting to connect to the SMB share, please try again.</string>
+    <string name="add_edit_smb_share_error_unknown_host">Unable to connect to the SMB host. Ensure the address field is correct and then try again.</string>
+    <string name="add_edit_smb_share_error_unknown">An unknown error occurred when attempting to connect to the SMB share, please try again.</string>
+    <string name="add_edit_smb_share_error_default">An unexpected error occurred when attempting to connect to the SMB share, please try again.</string>
+    <string name="loader_show">(show)</string>
+    <string name="main_list_no_syncs">No synchronisations to show.</string>
+    <string name="main_list_error">An error occurred when loading your synchronisations.</string>
+    <string name="manage_smb_shares_list_empty">No SMB shares to show.</string>
+    <string name="manage_smb_shares_list_error">An error occurred when loading your SMB shares.</string>
 
     <!-- Duplicate file check options -->
     <string-array name="add_edit_synchronisation_deletion_policy_options">
         <item name="add_edit_synchronisation_deletion_policy_perfect_copy">Perfect copy (default)</item>
-        <item name="add_edit_synchronisation_deletion_policy_dont_delete">Don\'t delete anything</item>
+        <item name="add_edit_synchronisation_deletion_policy_do_not_delete">Don\'t delete anything</item>
     </string-array>
 
 </resources>

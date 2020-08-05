@@ -11,7 +11,7 @@
         android:orientation="vertical"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:focusableInTouchMode="true">
 
         <android.support.v7.widget.Toolbar
@@ -26,7 +26,7 @@
 
             <Button android:id="@+id/deleteSynchronisation"
                 android:visibility="gone"
-                android:text="Delete"
+                android:text="@string/add_edit_synchronisation_delete_button_text"
                 android:layout_gravity="right"
                 android:background="@color/red"
                 android:textColor="@color/white"
@@ -52,7 +52,7 @@
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
                         android:textSize="16sp"
-                        android:text="Title:"/>
+                        android:text="@string/add_edit_synchronisation_title_input_title"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/jobTitleEditTextLayout"
@@ -65,8 +65,10 @@
                         <EditText android:id="@+id/jobTitleEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Choose a memorable title."
-                            android:maxLines="1" />
+                            android:hint="@string/add_edit_synchronisation_title_input_hint"
+                            android:maxLines="1"
+                            android:inputType="text"
+                            tools:ignore="Autofill" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -83,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:text="Source type:"/>
+                    android:text="@string/add_edit_synchronisation_source_type_title"/>
 
                 <RadioGroup android:id="@+id/sourceTypeRadioGroup"
                     android:layout_width="match_parent"
@@ -93,12 +95,12 @@
                     <RadioButton android:id="@+id/sourceTypeLocal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Local (phone / SD card)"/>
+                        android:text="@string/add_edit_synchronisation_source_type_local_text"/>
 
                     <RadioButton android:id="@+id/sourceTypeNetwork"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Network (SMB)"/>
+                        android:text="@string/add_edit_synchronisation_source_type_network_text"/>
 
                 </RadioGroup>
 
@@ -121,7 +123,7 @@
                         android:textColor="@color/red"
                         android:padding="3dip"
                         android:textSize="12sp"
-                        android:text="Please select an option."/>
+                        android:text="@string/add_edit_synchronisation_source_type_error_text"/>
 
                 </LinearLayout>
 
@@ -140,13 +142,13 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_weight="0"
-                    android:text="SMB share:"/>
+                    android:text="@string/add_edit_synchronisation_source_smb_input_text"
+                    tools:ignore="InefficientWeight" />
 
                 <Spinner android:id="@+id/sourceSMBSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown"
-                    ></Spinner>
+                    android:spinnerMode="dropdown" />
 
                 <LinearLayout android:id="@+id/sourceSMBErrorContainer"
                     android:layout_width="match_parent"
@@ -167,7 +169,7 @@
                         android:textColor="@color/red"
                         android:padding="3dip"
                         android:textSize="12sp"
-                        android:text="Please select an SMB share."/>
+                        android:text="@string/add_edit_synchronisation_source_smb_error"/>
 
                 </LinearLayout>
 
@@ -186,7 +188,8 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_weight="0"
-                    android:text="Source folder:"/>
+                    android:text="@string/add_edit_synchronisation_source_local_input_text"
+                    tools:ignore="InefficientWeight" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -208,8 +211,9 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:inputType="text"
-                            android:hint="Select a type first."
-                            android:maxLines="1" />
+                            android:hint="@string/add_edit_synchronisation_source_local_input_error"
+                            android:maxLines="1"
+                            tools:ignore="Autofill" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -218,7 +222,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
                         android:enabled="false"
-                        android:text="Browse"/>
+                        android:text="@string/add_edit_synchronisation_source_browse_text"/>
 
                 </LinearLayout>
 
@@ -235,7 +239,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:text="Target type:"/>
+                    android:text="@string/add_edit_synchronisation_target_type_title"/>
 
                 <RadioGroup android:id="@+id/targetTypeRadioGroup"
                     android:layout_width="match_parent"
@@ -245,12 +249,12 @@
                     <RadioButton android:id="@+id/targetTypeLocal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Local (phone / SD card)"/>
+                        android:text="@string/add_edit_synchronisation_target_type_local_text"/>
 
                     <RadioButton android:id="@+id/targetTypeNetwork"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Network (SMB)"/>
+                        android:text="@string/add_edit_synchronisation_target_type_network_text"/>
 
                 </RadioGroup>
 
@@ -273,7 +277,7 @@
                         android:textColor="@color/red"
                         android:padding="3dip"
                         android:textSize="12sp"
-                        android:text="Please select an option."/>
+                        android:text="@string/add_edit_synchronisation_target_type_error_text"/>
 
                 </LinearLayout>
 
@@ -292,13 +296,13 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_weight="0"
-                    android:text="SMB share:"/>
+                    android:text="@string/add_edit_synchronisation_target_smb_text"
+                    tools:ignore="InefficientWeight" />
 
                 <Spinner android:id="@+id/targetSMBSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown"
-                    ></Spinner>
+                    android:spinnerMode="dropdown" />
 
                 <LinearLayout android:id="@+id/targetSMBErrorContainer"
                     android:layout_width="match_parent"
@@ -319,7 +323,7 @@
                         android:textColor="@color/red"
                         android:padding="3dip"
                         android:textSize="12sp"
-                        android:text="Please select an SMB share."/>
+                        android:text="@string/add_edit_synchronisation_target_smb_error"/>
 
                 </LinearLayout>
 
@@ -338,7 +342,8 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_weight="0"
-                    android:text="Target folder:"/>
+                    android:text="@string/add_edit_synchronisation_target_local_text"
+                    tools:ignore="InefficientWeight" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -360,8 +365,9 @@
                             android:layout_height="wrap_content"
                             android:focusable="false"
                             android:inputType="text"
-                            android:hint="Select a type first."
-                            android:maxLines="1" />
+                            android:hint="@string/add_edit_synchronisation_target_error"
+                            android:maxLines="1"
+                            tools:ignore="Autofill" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -370,7 +376,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0"
                         android:enabled="false"
-                        android:text="Browse"/>
+                        android:text="@string/add_edit_synchronisation_target_browse_button_text"/>
 
                 </LinearLayout>
 
@@ -388,7 +394,8 @@
                     android:textStyle="bold"
                     android:layout_weight="0"
                     android:layout_marginBottom="10dip"
-                    android:text="Additional options"/>
+                    android:text="@string/add_edit_synchronisation_additional_options_title"
+                    tools:ignore="InefficientWeight" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -405,14 +412,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Deletion policy"></TextView>
+                            android:text="@string/add_edit_synchronisation_deletion_policy_title" />
 
                         <TextView android:id="@+id/additionalOptionDeletionPolicyInfoButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/lightBlue"
                             android:layout_marginLeft="5dip"
-                            android:text="(info)"></TextView>
+                            android:text="@string/add_edit_synchronisation_deletion_policy_info" />
 
                     </LinearLayout>
 
@@ -421,7 +428,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="0dip"
                         android:entries="@array/add_edit_synchronisation_deletion_policy_options"
-                        android:layout_weight="0.50"></Spinner>
+                        android:layout_weight="0.50" />
 
                 </LinearLayout>
 

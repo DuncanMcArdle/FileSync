@@ -19,27 +19,27 @@ public class ContextualASyncTask extends AsyncTask
 {
 	// Miscellaneous variables
 	private Context contextRef;
-	String globalSourceFolder;
-	NtlmPasswordAuthentication globalSourceCredentials;
-	String globalTargetFolder;
-	NtlmPasswordAuthentication globalTargetCredentials;
-	boolean performTransfer;
-	int deletionPolicy;
+	private String globalSourceFolder;
+	private NtlmPasswordAuthentication globalSourceCredentials;
+	private String globalTargetFolder;
+	private NtlmPasswordAuthentication globalTargetCredentials;
+	private boolean performTransfer;
+	private int deletionPolicy;
 
 	// Synchronisation tracking variables
-	int filesTransferred = 0;
-	int bytesProcessed = 0;
+	private int filesTransferred = 0;
+	private int bytesProcessed = 0;
 
 	// Tracking variables
-	int addedFileSize;
-	ArrayList<AnalysedFile> addedFileList;
-	int updatedFilesSize;
-	ArrayList<AnalysedFile> updatedFilesList;
-	int deletedFileSize;
-	ArrayList<AnalysedFile> deletedFileList;
+	private int addedFileSize;
+	private ArrayList<AnalysedFile> addedFileList;
+	private int updatedFilesSize;
+	private ArrayList<AnalysedFile> updatedFilesList;
+	private int deletedFileSize;
+	private ArrayList<AnalysedFile> deletedFileList;
 
 	// Deletion policies
-	int DELETION_POLICY_PERFECT_COPY = 0;
+	private final int DELETION_POLICY_PERFECT_COPY = 0;
 
 	public ContextualInterface callingActivityInterface;
 
@@ -73,9 +73,9 @@ public class ContextualASyncTask extends AsyncTask
 			try
 			{
 
-				addedFileList = new ArrayList<AnalysedFile>();
-				updatedFilesList = new ArrayList<AnalysedFile>();
-				deletedFileList = new ArrayList<AnalysedFile>();
+				addedFileList = new ArrayList<>();
+				updatedFilesList = new ArrayList<>();
+				deletedFileList = new ArrayList<>();
 
 				Log.i("STORAGE", "Calling SynchroniseFolders with " + globalTargetFolder);
 				SynchroniseFolders(globalSourceCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalSourceFolder)), globalSourceFolder, globalSourceCredentials, globalTargetCredentials != null ? null : DocumentFile.fromTreeUri(contextRef, Uri.parse(globalTargetFolder)), globalTargetFolder, globalTargetCredentials, performTransfer);
@@ -90,7 +90,6 @@ public class ContextualASyncTask extends AsyncTask
 				else
 				{
 					// Log details of the exception and return its message
-					Log.i("STORAGE", "Exxxxxceptional");
 					exception.printStackTrace();
 					callingActivityInterface.OnSynchronisationFailed(exception.getMessage());
 				}
@@ -109,7 +108,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Function to test access to a target folder
-	public boolean TestAccess(NtlmPasswordAuthentication targetCredentials, String targetFolderPath, boolean needsWriteAccess)
+	private boolean TestAccess(NtlmPasswordAuthentication targetCredentials, String targetFolderPath, boolean needsWriteAccess)
 	{
 		// Check if the target is an SMB share
 		if(targetCredentials != null)
@@ -135,12 +134,15 @@ public class ContextualASyncTask extends AsyncTask
 		}
 		else
 		{
+			// Create a target DocumentFile
 			DocumentFile targetFolder = DocumentFile.fromTreeUri(contextRef, Uri.parse(targetFolderPath));
-			// Attempt to connect to the target DocumentFile
+
+			// Check if the target file can be read
 			if(!targetFolder.canRead())
 			{
 				return false;
 			}
+			// Check if the target file needs write access and if so, can be written to
 			else if(needsWriteAccess && !targetFolder.canWrite())
 			{
 				return false;
@@ -151,7 +153,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Function to determine the MIME type of a file based on its extension
-	public static String GetMimeType(String url)
+	private static String GetMimeType(String url)
 	{
 		String type = null;
 		String extension = url.substring(url.lastIndexOf(".") + 1);
@@ -163,13 +165,13 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Trim trailing slash
-	public String TrimTrailingSlash(String original)
+	private String TrimTrailingSlash(String original)
 	{
 		return original.substring(0, original.length() - 1);
 	}
 
 	// Copy a file from one location to another
-	void CopyBufferedFile(BufferedInputStream bufferedInputStream, BufferedOutputStream bufferedOutputStream, String currentFileName) throws IOException
+	private void CopyBufferedFile(BufferedInputStream bufferedInputStream, BufferedOutputStream bufferedOutputStream, String currentFileName) throws IOException
 	{
 		try (BufferedInputStream in = bufferedInputStream; BufferedOutputStream out = bufferedOutputStream)
 		{
@@ -201,7 +203,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Function to synchronise two folders
-	public void SynchroniseFolders(DocumentFile sourceFolder, String sourceFolderPath, NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile targetFolder, String targetFolderPath, NtlmPasswordAuthentication targetFolderCredentials, boolean createFiles) throws IOException
+	private void SynchroniseFolders(DocumentFile sourceFolder, String sourceFolderPath, NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile targetFolder, String targetFolderPath, NtlmPasswordAuthentication targetFolderCredentials, boolean createFiles) throws IOException
 	{
 		Log.i("STORAGE", "SynchroniseFolders called on "+sourceFolderPath+" and "+targetFolderPath+" (targetFolder "+(targetFolder == null ? "is" : "is not")+" null");
 		Log.i("STORAGE", targetFolder == null ? "targetFolder is null" : "targetFolder is not null");
@@ -238,7 +240,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Synchronise the contents of a source destination to a target destination
-	public void SynchroniseFiles(NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile sourceDocumentFile, SmbFile sourceSMBFile, String sourceFolderPath, NtlmPasswordAuthentication targetFolderCredentials, DocumentFile targetFolder, String targetFolderPath, boolean createFiles) throws IOException
+	private void SynchroniseFiles(NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile sourceDocumentFile, SmbFile sourceSMBFile, String sourceFolderPath, NtlmPasswordAuthentication targetFolderCredentials, DocumentFile targetFolder, String targetFolderPath, boolean createFiles) throws IOException
 	{
 		Log.i("STORAGE", "SynchroniseFiles called on "+sourceFolderPath+" and "+targetFolderPath+" (targetFolder "+(targetFolder == null ? "is" : "is not")+" null");
 
@@ -360,7 +362,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Delete files from the target folder that are not found in the source folder
-	public void DeleteSurplusTargetFiles(NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile sourceFolder, String sourceFolderPath, NtlmPasswordAuthentication destinationFolderCredentials, DocumentFile destinationFolder, String destinationFolderPath, boolean createFiles) throws IOException
+	private void DeleteSurplusTargetFiles(NtlmPasswordAuthentication sourceFolderCredentials, DocumentFile sourceFolder, String sourceFolderPath, NtlmPasswordAuthentication destinationFolderCredentials, DocumentFile destinationFolder, String destinationFolderPath, boolean createFiles) throws IOException
 	{
 		Log.i("STORAGE", "DeleteSurplusTargetFiles called with "+sourceFolderPath+" and "+destinationFolderPath);
 
@@ -442,7 +444,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Function to recursively list the contents of a DocumentFile folder
-	public void RecursivelyListDocumentFiles(DocumentFile sourceFolder, ArrayList<AnalysedFile> deletedFileList) throws IOException
+	private void RecursivelyListDocumentFiles(DocumentFile sourceFolder, ArrayList<AnalysedFile> deletedFileList)
 	{
 		// Loop through the folder's contents
 		for (DocumentFile file : sourceFolder.listFiles())
@@ -462,7 +464,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Function to recursively list the contents of an SMB folder
-	public void RecursivelyListSMBFiles(SmbFile sourceFolder, ArrayList<AnalysedFile> deletedFileList) throws IOException
+	private void RecursivelyListSMBFiles(SmbFile sourceFolder, ArrayList<AnalysedFile> deletedFileList) throws IOException
 	{
 		// Loop through the folder's contents
 		for (SmbFile file : sourceFolder.listFiles())
@@ -482,7 +484,7 @@ public class ContextualASyncTask extends AsyncTask
 	}
 
 	// Function to case-insensitively find a DocumentFile
-	public DocumentFile caseInsensitiveFindFile(String fileName, DocumentFile folder)
+	private DocumentFile caseInsensitiveFindFile(String fileName, DocumentFile folder)
 	{
 		Log.i("STORAGE", "caseInsensitiveFindFile called with "+folder.getUri().toString()+" and "+fileName);
 		for (DocumentFile document : folder.listFiles())
@@ -498,8 +500,8 @@ public class ContextualASyncTask extends AsyncTask
 	// MainActivity interface
 	public interface ContextualInterface
 	{
-		public void OnSynchronisationProgress(int filesProcessed, int bytesProcessed, String currentFile);
-		public void OnSynchronisationFailed(String error);
-		public void OnSynchronisationComplete(boolean performTransfer, long addedFileSize, ArrayList<AnalysedFile> addedFileList, long updatedFileSize, ArrayList<AnalysedFile> updatedFileList, long deletedFileSize, ArrayList<AnalysedFile> deletedFileList);
+		void OnSynchronisationProgress(int filesProcessed, int bytesProcessed, String currentFile);
+		void OnSynchronisationFailed(String error);
+		void OnSynchronisationComplete(boolean performTransfer, long addedFileSize, ArrayList<AnalysedFile> addedFileList, long updatedFileSize, ArrayList<AnalysedFile> updatedFileList, long deletedFileSize, ArrayList<AnalysedFile> deletedFileList);
 	}
 }

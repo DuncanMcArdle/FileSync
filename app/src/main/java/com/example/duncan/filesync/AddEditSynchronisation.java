@@ -3,11 +3,8 @@ package com.example.duncan.filesync;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.DocumentsContract;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -31,57 +27,51 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.provider.DocumentsContract.EXTRA_INITIAL_URI;
-
 public class AddEditSynchronisation extends AppCompatActivity
 {
 	// Request codes
-	int REQUEST_CODE_SELECT_SOURCE_FOLDER_LOCAL = 100;
-	int REQUEST_CODE_SELECT_TARGET_FOLDER_LOCAL = 101;
-	int REQUEST_CODE_SELECT_SOURCE_FOLDER_SMB = 110;
-	int REQUEST_CODE_SELECT_TARGET_FOLDER_SMB = 111;
+	private final int REQUEST_CODE_SELECT_SOURCE_FOLDER_LOCAL = 100;
+	private final int REQUEST_CODE_SELECT_TARGET_FOLDER_LOCAL = 101;
+	private final int REQUEST_CODE_SELECT_SOURCE_FOLDER_SMB = 110;
+	private final int REQUEST_CODE_SELECT_TARGET_FOLDER_SMB = 111;
 
 	// Miscellaneous variables
-	Uri sourceFolder = null;
-	Uri targetFolder;
-	int modifyingSynchronisation = -1;
-	JSONArray SMBShareArray;
-	List<String> SMBShareList = new ArrayList<String>();
-	SharedPreferences myPreferences;
+	private Uri sourceFolder = null;
+	private Uri targetFolder;
+	private int modifyingSynchronisation = -1;
+	private JSONArray SMBShareArray;
+	private List<String> SMBShareList = new ArrayList<>();
+	private SharedPreferences myPreferences;
 
 	// Form inputs
-	Button deleteSynchronisationButton;
-	EditText jobTitleEditText;
-	TextInputLayout jobTitleContainer;
-	RadioGroup sourceTypeRadioGroup;
-	LinearLayout sourceTypeRadioGroupErrorContainer;
-	Spinner sourceSMBSpinner;
-	LinearLayout sourceSMBErrorContainer;
-	EditText sourceFolderEditText;
-	TextInputLayout sourceFolderEditTextContainer;
-	Button sourceBrowseButton;
-	RadioGroup targetTypeRadioGroup;
-	Spinner targetSMBSpinner;
-	LinearLayout targetSMBErrorContainer;
-	LinearLayout targetTypeRadioGroupErrorContainer;
-	EditText targetFolderEditText;
-	TextInputLayout targetFolderEditTextContainer;
-	Button targetBrowseButton;
-	Spinner deletionPolicySpinner;
-	Button addSynchronisationButton;
+	private Button deleteSynchronisationButton;
+	private EditText jobTitleEditText;
+	private TextInputLayout jobTitleContainer;
+	private RadioGroup sourceTypeRadioGroup;
+	private LinearLayout sourceTypeRadioGroupErrorContainer;
+	private Spinner sourceSMBSpinner;
+	private LinearLayout sourceSMBErrorContainer;
+	private EditText sourceFolderEditText;
+	private TextInputLayout sourceFolderEditTextContainer;
+	private Button sourceBrowseButton;
+	private RadioGroup targetTypeRadioGroup;
+	private Spinner targetSMBSpinner;
+	private LinearLayout targetSMBErrorContainer;
+	private LinearLayout targetTypeRadioGroupErrorContainer;
+	private EditText targetFolderEditText;
+	private TextInputLayout targetFolderEditTextContainer;
+	private Button targetBrowseButton;
+	private Spinner deletionPolicySpinner;
+	private Button addSynchronisationButton;
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
+		if (item.getItemId() == android.R.id.home)
 		{
-			case android.R.id.home:
-			{
-				// Finish the activity, returning to the calling one
-				finish();
-				overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
-				break;
-			}
+			// Finish the activity, returning to the calling one
+			finish();
+			overridePendingTransition(R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 		}
 		return true;
 	}
@@ -153,7 +143,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 
 		// Update the SMB drop-downs
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, SMBShareList);
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, SMBShareList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		sourceSMBSpinner.setAdapter(adapter);
 		targetSMBSpinner.setAdapter(adapter);
@@ -163,7 +153,10 @@ public class AddEditSynchronisation extends AppCompatActivity
 		// Initialise the toolbar
 		Toolbar myToolbar = findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(getSupportActionBar() != null)
+		{
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		// When the source type is changed
 		sourceTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -568,7 +561,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 	}
 
 	// Function to set the SMB share drop-downs value(s)
-	public void SelectSMBShare(Spinner targetSpinner, String shareTitle)
+	private void SelectSMBShare(Spinner targetSpinner, String shareTitle)
 	{
 		for(int i = 0; i < SMBShareList.size(); i++)
 		{
@@ -639,10 +632,10 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 	}
 
-	public void ValidateTitle()
+	private void ValidateTitle()
 	{
 		// Validate the input
-		if(jobTitleEditText.getText().toString().length() <= 0 || jobTitleEditText.getText().toString() == "")
+		if(jobTitleEditText.getText().toString().length() <= 0 || jobTitleEditText.getText().toString().equals(""))
 		{
 			jobTitleContainer.setError("Please enter a title.");
 		}
@@ -680,7 +673,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 	}
 
-	public void ValidateRadioGroup(RadioGroup radioGroup, LinearLayout radioGroupErrorContainer)
+	private void ValidateRadioGroup(RadioGroup radioGroup, LinearLayout radioGroupErrorContainer)
 	{
 		// Check if an option was selected
 		if(radioGroup.getCheckedRadioButtonId() == -1)
@@ -695,7 +688,7 @@ public class AddEditSynchronisation extends AppCompatActivity
 		}
 	}
 
-	public void ValidateSMBSelection(Spinner SMBSpinner, LinearLayout SMBSpinnerErrorContainer)
+	private void ValidateSMBSelection(Spinner SMBSpinner, LinearLayout SMBSpinnerErrorContainer)
 	{
 		// Check if the SMB share selection required validation
 		if((SMBSpinner == sourceSMBSpinner && sourceTypeRadioGroup.getCheckedRadioButtonId() != R.id.sourceTypeNetwork) || (SMBSpinner == targetSMBSpinner && targetTypeRadioGroup.getCheckedRadioButtonId() != R.id.targetTypeNetwork))

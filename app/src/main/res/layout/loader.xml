@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
@@ -8,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:text="Text will go here..."
         android:padding="15dp"
         android:textSize="12pt"
         />
@@ -30,13 +30,12 @@
                 android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:paddingRight="5dp"
-                android:text="Time taken:" />
+                android:text="@string/loader_time_taken_title" />
 
             <TextView android:id="@+id/loaderSummaryTimeTaken"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:text="14 seconds" />
+                android:layout_width="0dp" />
 
         </LinearLayout>
 
@@ -52,13 +51,12 @@
                 android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:paddingRight="5dp"
-                android:text="Files transferred:" />
+                android:text="@string/loader_files_transferred_title" />
 
             <TextView android:id="@+id/loaderSummaryFilesTransferred"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:text="1,234" />
+                android:layout_width="0dp" />
 
         </LinearLayout>
 
@@ -74,13 +72,12 @@
                 android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:paddingRight="5dp"
-                android:text="Data transferred:" />
+                android:text="@string/loader_data_transferred_title" />
 
             <TextView android:id="@+id/loaderSummaryDataTransferred"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:text="12.3mb" />
+                android:layout_width="0dp" />
 
         </LinearLayout>
 
@@ -96,7 +93,7 @@
                 android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:paddingRight="5dp"
-                android:text="Files added:" />
+                android:text="@string/loader_files_added_title" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -106,8 +103,7 @@
 
                 <TextView android:id="@+id/loaderSummaryFilesAddedNumber"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:text="123" />
+                    android:layout_width="wrap_content" />
 
                 <TextView android:id="@+id/loaderSummaryFilesAddedShow"
                     android:layout_height="wrap_content"
@@ -116,14 +112,13 @@
                     android:textStyle="bold"
                     android:textColor="@color/lightBlue"
                     android:background="?attr/selectableItemBackground"
-                    android:text="(show)" />
+                    android:text="@string/loader_files_added_show_text" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <android.support.constraint.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -155,7 +150,7 @@
                 android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:paddingRight="5dp"
-                android:text="Files updated" />
+                android:text="@string/loader_files_updated_title" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -165,8 +160,7 @@
 
                 <TextView android:id="@+id/loaderSummaryFilesUpdatedNumber"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:text="456" />
+                    android:layout_width="wrap_content" />
 
                 <TextView android:id="@+id/loaderSummaryFilesUpdatedShow"
                     android:layout_height="wrap_content"
@@ -174,7 +168,7 @@
                     android:layout_marginLeft="5dp"
                     android:textStyle="bold"
                     android:textColor="@color/lightBlue"
-                    android:text="(show)" />
+                    android:text="@string/loader_files_updated_show_text" />
 
             </LinearLayout>
 
@@ -213,7 +207,7 @@
                 android:textAlignment="textEnd"
                 android:textStyle="bold"
                 android:paddingRight="5dp"
-                android:text="Files deleted:" />
+                android:text="@string/loader_files_deleted_title" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -223,8 +217,7 @@
 
                 <TextView android:id="@+id/loaderSummaryFilesDeletedNumber"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:text="123" />
+                    android:layout_width="wrap_content" />
 
                 <TextView android:id="@+id/loaderSummaryFilesDeletedShow"
                     android:layout_height="wrap_content"
@@ -232,7 +225,7 @@
                     android:layout_marginLeft="5dp"
                     android:textStyle="bold"
                     android:textColor="@color/lightBlue"
-                    android:text="(show)" />
+                    android:text="@string/loader_files_deleted_show_text" />
 
             </LinearLayout>
 
@@ -303,14 +296,14 @@
                     android:layout_weight="1"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
-                    android:text="File:" />
+                    android:text="@string/loader_current_file_title"
+                    tools:ignore="NestedWeights" />
 
                 <TextView android:id="@+id/loaderProgressBarFileNumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
-                    android:layout_marginLeft="5dip"
-                    android:text="1 of 10"/>
+                    android:layout_marginLeft="5dip"/>
 
             </LinearLayout>
 
@@ -327,8 +320,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:textStyle="italic"
-                android:textAlignment="textEnd"
-                android:text="someFile.jpg" />
+                android:textAlignment="textEnd" />
 
         </LinearLayout>
 
@@ -340,6 +332,7 @@
         android:padding="15dp"/>
 
     <ImageView android:id="@+id/loaderIcon"
+        android:contentDescription="@string/loader_image_description"
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 

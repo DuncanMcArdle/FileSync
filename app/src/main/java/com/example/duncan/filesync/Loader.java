@@ -15,36 +15,36 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class Loader
 {
-	AlertDialog.Builder alertDialogBuilder;
-	LayoutInflater layoutInflater;
-	Context context;
-	AlertDialog alertDialog;
+	private AlertDialog.Builder alertDialogBuilder;
+	private Context context;
+	private AlertDialog alertDialog;
 
 	// Titles
-	TextView addedFilesTitle;
-	TextView updatedFilesTitle;
-	TextView deletedFilesTitle;
+	private TextView addedFilesTitle;
+	private TextView updatedFilesTitle;
+	private TextView deletedFilesTitle;
 
 	// List views
-	ListView addedFilesListViewShow;
-	ListView updatedFilesListViewShow;
-	ListView deletedFilesListViewShow;
+	private ListView addedFilesListViewShow;
+	private ListView updatedFilesListViewShow;
+	private ListView deletedFilesListViewShow;
 
 	public Loader(Context passedInContext, LayoutInflater passedInLayoutInflater)
 	{
 		Log.i("STORAGE", "Loader called");
 
 		context = passedInContext;
-		layoutInflater = passedInLayoutInflater;
 		alertDialogBuilder = new AlertDialog.Builder(context);
 
 		// Setup the loader
-		alertDialogBuilder.setView(layoutInflater.inflate(R.layout.loader, null));
+		alertDialogBuilder.setView(View.inflate(context, R.layout.loader, null));
 		alertDialogBuilder.setCancelable(false);
 		alertDialogBuilder.setNegativeButton("Cancel", null);
 		alertDialog = alertDialogBuilder.create();
@@ -52,12 +52,15 @@ public class Loader
 		// Show the dialog
 		alertDialog.show();
 
-		//alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "HUHWHAT", (DialogInterface.OnClickListener) null);
+		// Obtain references to the ListViews and their titles
+		addedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
+		addedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesAddedListView);
+		updatedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
+		updatedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedListView);
+		deletedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
+		deletedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedListView);
 
 		// Add listeners for the expansion buttons on transfer summaries
-		TextView showFilesAdded = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
-		TextView showFilesUpdated = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
-		TextView showFilesDeleted = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
 		View.OnClickListener showHideFilesListener = new View.OnClickListener()
 		{
 			@Override
@@ -91,24 +94,16 @@ public class Loader
 				targetListView.setVisibility(targetListView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 			}
 		};
-		showFilesAdded.setOnClickListener(showHideFilesListener);
-		showFilesUpdated.setOnClickListener(showHideFilesListener);
-		showFilesDeleted.setOnClickListener(showHideFilesListener);
-
-		// Obtain references to the listviews and their titles
-		addedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesAddedShow);
-		addedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesAddedListView);
-		updatedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedShow);
-		updatedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedListView);
-		deletedFilesTitle = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedShow);
-		deletedFilesListViewShow = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedListView);
+		addedFilesTitle.setOnClickListener(showHideFilesListener);
+		updatedFilesTitle.setOnClickListener(showHideFilesListener);
+		deletedFilesTitle.setOnClickListener(showHideFilesListener);
 	}
 
 	// Update the loader's title
 	public void UpdateTitle(String loaderTitle)
 	{
 		// Set the loader's contents
-		TextView progressBarTitle = (TextView) alertDialog.findViewById(R.id.loaderTitle);
+		TextView progressBarTitle = alertDialog.findViewById(R.id.loaderTitle);
 		progressBarTitle.setText(loaderTitle);
 	}
 
@@ -144,8 +139,8 @@ public class Loader
 
 		// Update the progress bar elements
 		progressBar.setProgress(progress);
-		progressBarPercentage.setText(progress+"%");
-		progressBarFileNumber.setText((filesProcessed + 1)+" of "+totalFiles);
+		progressBarPercentage.setText(String.format(Locale.UK, "%d%%", progress));
+		progressBarFileNumber.setText(String.format(Locale.UK, "%d of %d", filesProcessed + 1, totalFiles));
 		progressBarFileName.setText(currentFileName == null ? "" : currentFileName);
 		progressBar.setVisibility(View.VISIBLE);
 		alertDialog.findViewById(R.id.loaderProgressBarArea).setVisibility(View.VISIBLE);
@@ -185,15 +180,15 @@ public class Loader
 		TextView timeTakenTextView = alertDialog.findViewById(R.id.loaderSummaryTimeTaken);
 		timeTakenTextView.setText(MakeSecondsReadable(timeTaken));
 		TextView filesTransferredTextView = alertDialog.findViewById(R.id.loaderSummaryFilesTransferred);
-		filesTransferredTextView.setText(String.format("%,d", filesTransferred));
+		filesTransferredTextView.setText(String.format(Locale.UK, "%,d", filesTransferred));
 		TextView dataTransferredTextView = alertDialog.findViewById(R.id.loaderSummaryDataTransferred);
 		dataTransferredTextView.setText(HumanReadableByteCount(dataTransferred, true));
 		TextView filesAddedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesAddedNumber);
-		filesAddedTextView.setText(String.format("%,d", addedFileList.size()));
+		filesAddedTextView.setText(String.format(Locale.UK,"%,d", addedFileList.size()));
 		TextView filesUpdatedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesUpdatedNumber);
-		filesUpdatedTextView.setText(String.format("%,d", updatedFileList.size()));
+		filesUpdatedTextView.setText(String.format(Locale.UK,"%,d", updatedFileList.size()));
 		TextView filesDeletedTextView = alertDialog.findViewById(R.id.loaderSummaryFilesDeletedNumber);
-		filesDeletedTextView.setText(String.format("%,d", deletedFileList.size()));
+		filesDeletedTextView.setText(String.format(Locale.UK,"%,d", deletedFileList.size()));
 
 		// Minimise the file lists
 		// Show / Hide the target ListView (and update the associated button)
@@ -201,9 +196,9 @@ public class Loader
 		addedFilesListViewShow.setVisibility(View.GONE);
 		updatedFilesListViewShow.setVisibility(View.GONE);
 		deletedFilesListViewShow.setVisibility(View.GONE);
-		addedFilesTitle.setText("(show)");
-		updatedFilesTitle.setText("(show)");
-		deletedFilesTitle.setText("(show)");
+		addedFilesTitle.setText(R.string.loader_show);
+		updatedFilesTitle.setText(R.string.loader_show);
+		deletedFilesTitle.setText(R.string.loader_show);
 
 		// Check if any files were added
 		if(addedFileList.size() > 0)
@@ -333,17 +328,17 @@ public class Loader
 	}
 
 	// Function that converts bytes into a human readable format
-	public static String HumanReadableByteCount(long bytes, boolean si)
+	private static String HumanReadableByteCount(long bytes, boolean si)
 	{
 		int unit = si ? 1000 : 1024;
 		if (bytes < unit) return bytes + " B";
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
-		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+		return String.format(Locale.UK,"%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 
 	// Function that converts sections into a human readable string
-	public static String MakeSecondsReadable(int seconds)
+	private static String MakeSecondsReadable(int seconds)
 	{
 		int sec = seconds % 60;
 		int min = (seconds / 60)%60;
@@ -408,22 +403,27 @@ public class Loader
 					inflate(R.layout.file_list_item, parent, false);
 			}
 
-
-
 			AnalysedFile currentFile = (AnalysedFile) getItem(position);
-			TextView fileNumber = (TextView) convertView.findViewById(R.id.fileNumber);
-			TextView fileName = (TextView) convertView.findViewById(R.id.fileName);
+			TextView fileNumber = convertView.findViewById(R.id.fileNumber);
+			TextView fileName = convertView.findViewById(R.id.fileName);
 
 			// URL decode the file's path
-			String decodedPath = URLDecoder.decode(currentFile.filePath);
+			String decodedPath = null;
+			try
+			{
+				decodedPath = URLDecoder.decode(currentFile.filePath, "UTF-8");
+			} catch (UnsupportedEncodingException e)
+			{
+				e.printStackTrace();
+			}
 
 			// Obtain the final segment of the URI
 			String finalPathSegment = decodedPath.substring(decodedPath.lastIndexOf(":") + 1);
 
 			Log.i("STORAGE", "Final path segment: "+finalPathSegment);
 			Log.i("STORAGE", "File name: "+currentFile.fileName);
-			fileNumber.setText((position + 1)+". ");
-			fileName.setText(finalPathSegment+"/"+currentFile.fileName+" ("+(currentFile.isAFolder ? "folder" : HumanReadableByteCount(currentFile.fileSize, true))+")");
+			fileNumber.setText(String.format(Locale.UK, "%d. ", position + 1));
+			fileName.setText(String.format(Locale.UK, "%s/%s (%s)", finalPathSegment, currentFile.fileName, currentFile.isAFolder ? "folder" : HumanReadableByteCount(currentFile.fileSize, true)));
 
 			return convertView;
 		}

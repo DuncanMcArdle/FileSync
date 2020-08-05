@@ -14,23 +14,21 @@ import jcifs.smb.SmbFile;
 
 public class TestSMBShare extends AsyncTask
 {
-    Context callingContext;
-    String SMBShareURL;
-    NtlmPasswordAuthentication SMBShareAuthentication;
-    String testResult;
+	private String SMBShareURL;
+	private NtlmPasswordAuthentication SMBShareAuthentication;
+	private String testResult;
 
     public interface TestResponse
 	{
 		void TestCompleted(String result);
 	}
 
-	public TestResponse delegate = null;
+	private TestResponse delegate;
 
     // Initialisation
     public TestSMBShare(Context inputContext, String inputSMBShareURL, NtlmPasswordAuthentication inputSMBShareAuthentication, TestResponse delegate)
     {
 		// Store the passed in details
-		callingContext = inputContext;
 		SMBShareURL = "smb://"+inputSMBShareURL;
 		SMBShareAuthentication = inputSMBShareAuthentication;
 		this.delegate = delegate;

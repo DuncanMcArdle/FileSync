@@ -21,20 +21,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 
 public class SMBBrowser extends AppCompatActivity
 {
-
-	CustomAdapter fileFolderListAdapter;
-	List<List<String>> fileFolderList = new ArrayList<List<String>>();
-	String SMBURL;
-	String currentPath = "";
-	String currentFolder;
-	NtlmPasswordAuthentication SMBShareAuthentication;
-	Button upButton;
+	private CustomAdapter fileFolderListAdapter;
+	private List<List<String>> fileFolderList = new ArrayList<>();
+	private String SMB_URL;
+	private String currentPath = "";
+	private String currentFolder;
+	private NtlmPasswordAuthentication SMBShareAuthentication;
+	private Button upButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -45,10 +45,13 @@ public class SMBBrowser extends AppCompatActivity
 		// Initialise the toolbar
 		Toolbar activityToolbar = findViewById(R.id.SMBBrowserToolbar);
 		setSupportActionBar(activityToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(getSupportActionBar() != null)
+		{
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		// Populate the ListView with the retrieved synchronisations
-		ListView listView = (ListView) findViewById(R.id.SMBBrowserListView);
+		ListView listView = findViewById(R.id.SMBBrowserListView);
 		fileFolderListAdapter = new CustomAdapter();
 		listView.setAdapter(fileFolderListAdapter);
 
@@ -89,8 +92,8 @@ public class SMBBrowser extends AppCompatActivity
 			JSONObject SMBJSONObject = new JSONObject(SMBBrowserIntent.getStringExtra("SMB_JSON"));
 			currentPath = SMBBrowserIntent.getStringExtra("PATH");
 			SMBShareAuthentication = new NtlmPasswordAuthentication(SMBJSONObject.getString("Domain"), SMBJSONObject.getString("Username"), SMBJSONObject.getString("Password"));
-			SMBURL = "smb://"+SMBJSONObject.getString("Address");
-			Log.i("STORAGE", "Set SMB URL to "+SMBURL);
+			SMB_URL = "smb://"+SMBJSONObject.getString("Address");
+			Log.i("STORAGE", "Set SMB URL to "+ SMB_URL);
 
 			Log.i("STORAGE", "Current path set to '"+currentPath+"'");
 
@@ -107,14 +110,10 @@ public class SMBBrowser extends AppCompatActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
+		// Back button
+		if (item.getItemId() == android.R.id.home)
 		{
-			// Back button
-			case android.R.id.home:
-			{
-				finish();
-				break;
-			}
+			finish();
 		}
 		return true;
 	}
@@ -136,7 +135,7 @@ public class SMBBrowser extends AppCompatActivity
 
 	private void DisplayFolder(NtlmPasswordAuthentication authentication, String targetPath)
 	{
-		Log.i("STORAGE", "Loading "+SMBURL+targetPath);
+		Log.i("STORAGE", "Loading "+ SMB_URL +targetPath);
 
 		try
 		{
@@ -148,8 +147,8 @@ public class SMBBrowser extends AppCompatActivity
 			pageToolbar.setTitle(currentFolder);
 
 			// Update the "Current path"
-			TextView currentPathTextView = (TextView) findViewById(R.id.SMBBrowserCurrentPath);
-			currentPathTextView.setText(SMBURL+currentPath);
+			TextView currentPathTextView = findViewById(R.id.SMBBrowserCurrentPath);
+			currentPathTextView.setText(String.format(Locale.UK, "%s%s", SMB_URL, currentPath));
 
 			// Check if the user is at the top path
 			if(currentPath.length() <= 0)
@@ -194,10 +193,10 @@ public class SMBBrowser extends AppCompatActivity
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
-			convertView = getLayoutInflater().inflate(R.layout.smb_folder_listitem, null);
+			convertView = View.inflate(getApplicationContext(), R.layout.smb_folder_listitem, null);
 
-			TextView jobTitle = (TextView) convertView.findViewById(R.id.smbFileFolderTitle);
-			ImageView jobIcon = (ImageView) convertView.findViewById(R.id.smbFileFolderIcon);
+			TextView jobTitle = convertView.findViewById(R.id.smbFileFolderTitle);
+			ImageView jobIcon = convertView.findViewById(R.id.smbFileFolderIcon);
 			try
 			{
 				// Set the file / folder's title
@@ -246,13 +245,13 @@ public class SMBBrowser extends AppCompatActivity
 		{
 			try
 			{
-				SmbFile testFile = new SmbFile(SMBURL+targetPath+"/", SMBShareAuthentication);
+				SmbFile testFile = new SmbFile(SMB_URL +targetPath+"/", SMBShareAuthentication);
 				testFile.setConnectTimeout(5000);
 				testFile.connect();
 				Log.i("STORAGE", "Connected successfully.");
 
 				// Initialise lists for the files and folders
-				List<List<String>> newFileFolderList = new ArrayList<List<String>>();
+				List<List<String>> newFileFolderList = new ArrayList<>();
 
 				SmbFile[] smbFile = testFile.listFiles();
 				for(int i = 0; i < smbFile.length; i++)
@@ -298,7 +297,7 @@ public class SMBBrowser extends AppCompatActivity
 	{
 		public int compare(List<String> left, List<String> right)
 		{
-			if(left.get(0) != right.get(0))
+			if(!left.get(0).equals(right.get(0)))
 			{
 				return right.get(0).compareTo(left.get(0));
 			}
