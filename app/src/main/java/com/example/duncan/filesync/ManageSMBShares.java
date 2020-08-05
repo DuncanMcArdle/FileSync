@@ -77,6 +77,7 @@ public class ManageSMBShares extends AppCompatActivity
         });
     }
 
+    // When a user returns from an activity opened by this page
     public void onActivityResult(int requestCode, int resultCode, Intent resultData)
     {
         if (resultCode == RESULT_OK)
@@ -84,8 +85,6 @@ public class ManageSMBShares extends AppCompatActivity
             // When the user returns from creating a new SMB share
             if (requestCode == REQUEST_CODE_ADD_SMB_SHARE)
             {
-                Log.i("STORAGE", "Returned from getting new SMB share");
-
                 JSONObject newSMBShare = new JSONObject();
                 try {
                     // Populate the JSON object with the passed in details
@@ -95,7 +94,6 @@ public class ManageSMBShares extends AppCompatActivity
 					newSMBShare.put("Password", resultData.getStringExtra("Password"));
 					newSMBShare.put("Address", resultData.getStringExtra("Address"));
                     smbShareArray.put(newSMBShare);
-                    Log.i("STORAGE", "Adding share: "+smbShareArray.toString());
 
                     // Sort the SMB array
                     smbShareArray = SortJSONArray(smbShareArray, "Title");
@@ -103,12 +101,13 @@ public class ManageSMBShares extends AppCompatActivity
                     // Update shared preferences
                     myPrefsEdit.putString("SMBShares", smbShareArray.toString());
                     myPrefsEdit.commit();
-                    Log.i("STORAGE", "Added SMB share");
 
                     // Update the ListView
                     smbShareListAdapter.notifyDataSetChanged();
                     LoadSMBShares();
-                } catch (JSONException e) {
+                }
+                catch (JSONException e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -127,19 +126,18 @@ public class ManageSMBShares extends AppCompatActivity
                     myPrefsEdit.commit();
                 }
                 else
-                    {
+                {
                     // Initialise a new JSON object
                     JSONObject newSMBShare = new JSONObject();
 
-                    try {
+                    try
+                    {
                         // Populate the JSON object with the passed in details
                         newSMBShare.put("Title", resultData.getStringExtra("Title"));
                         newSMBShare.put("Domain", resultData.getStringExtra("Domain"));
                         newSMBShare.put("Username", resultData.getStringExtra("Username"));
 						newSMBShare.put("Password", resultData.getStringExtra("Password"));
 						newSMBShare.put("Address", resultData.getStringExtra("Address"));
-
-                        Log.i("STORAGE", "JSON: " + newSMBShare.toString());
 
                         // Remove the existing SMB share
                         smbShareArray.remove(resultData.getIntExtra("ID", -1));
@@ -167,7 +165,6 @@ public class ManageSMBShares extends AppCompatActivity
                             {
                                 // If so, update the title
                                 synchronisationArray.getJSONObject(i).put("SourceSMBShare", newTitle);
-                                Log.i("STORAGE","Updated SourceSMBShare for Synchronisation"+i+" from '"+originalTitle+"' to '"+newTitle+"'");
                             }
 
                             // Check if the synchronisation references the SMB share being changed as its source
@@ -175,15 +172,15 @@ public class ManageSMBShares extends AppCompatActivity
                             {
                                 // If so, update the title
                                 synchronisationArray.getJSONObject(i).put("TargetSMBShare", newTitle);
-                                Log.i("STORAGE","Updated TargetSMBShare for Synchronisation"+i+" from '"+originalTitle+"' to '"+newTitle+"'");
                             }
 
                             // Update shared preferences
                             myPrefsEdit.putString("Synchronisations", synchronisationArray.toString());
                             myPrefsEdit.commit();
                         }
-
-                    } catch (Exception e) {
+                    }
+                    catch (Exception e)
+                    {
                         e.printStackTrace();
                     }
                 }
@@ -206,8 +203,6 @@ public class ManageSMBShares extends AppCompatActivity
             // Load an array of existing SMB shares
             smbShareArray = new JSONArray(myPreferences.getString("SMBShares", "[]"));
 
-            Log.i("STORAGE", smbShareArray.toString()+" "+ smbShareArray.length());
-
             // Check if any SMB shares were retrieved
             if(smbShareArray.length() <= 0)
             {
@@ -227,9 +222,6 @@ public class ManageSMBShares extends AppCompatActivity
             listViewLoader.setText(R.string.manage_smb_shares_list_error);
             e.printStackTrace();
         }
-
-        // Update the ListView
-        //smbShareListAdapter.notifyDataSetChanged();
     }
 
     class CustomAdapter extends BaseAdapter
@@ -278,7 +270,6 @@ public class ManageSMBShares extends AppCompatActivity
                     {
                         // Obtain the details of the selected SMB share
                         JSONObject smbShareObject = smbShareArray.getJSONObject(position);
-                        Log.i("STORAGE", smbShareObject.toString());
 
                         // Create an intent to open the Add / Edit SMB share activity
                         Intent editSMBShareIntent = new Intent(ManageSMBShares.this, AddEditSMBShare.class);

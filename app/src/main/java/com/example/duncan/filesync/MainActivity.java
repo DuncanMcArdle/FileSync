@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -29,12 +28,12 @@ import java.util.List;
 
 import jcifs.smb.NtlmPasswordAuthentication;
 
-public class MainActivity extends AppCompatActivity implements ContextualASyncTask.ContextualInterface
+public class MainActivity extends AppCompatActivity implements SynchronisationASyncTask.ContextualInterface
 {
 	private SharedPreferences myPreferences;
 	private SharedPreferences.Editor myPrefsEdit;
 	private CustomAdapter synchronisationListAdapter;
-	private ContextualASyncTask synchronisationTask;
+	private SynchronisationASyncTask synchronisationTask;
 	private long synchronisationStart;
 	private int lastFilesProcessed;
 	private int lastPercentCompleted;
@@ -79,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		synchronisationListAdapter = new CustomAdapter();
 		listView.setAdapter(synchronisationListAdapter);
 
+		// Request the required permissions
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 255);
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 256);
 
@@ -116,15 +116,13 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
 					return true;
 				}
-
-				Log.i("STORAGE", "Menu item clicked");
 				return false;
 			}
 		});
-
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	// When a user returns from an activity opened by this page
 	public void onActivityResult(int requestCode, int resultCode, Intent resultData)
 	{
 		if (resultCode == RESULT_OK)
@@ -132,8 +130,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 			// When the user returns from creating a new synchronisation job
 			if (requestCode == REQUEST_CODE_ADD_SYNCHRONISATION)
 			{
-				Log.i("STORAGE", "Returned from getting new sync job");
-
 				JSONObject newSynchronisationJob = new JSONObject();
 				try
 				{
@@ -154,12 +150,12 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					// Update shared preferences
 					myPrefsEdit.putString("Synchronisations", synchronisationArray.toString());
 					myPrefsEdit.commit();
-					Log.i("STORAGE", "Added synchronisation");
 
 					// Update the ListView
 					synchronisationListAdapter.notifyDataSetChanged();
 					LoadSynchronisations();
-				} catch (JSONException e)
+				}
+				catch (JSONException e)
 				{
 					e.printStackTrace();
 				}
@@ -195,8 +191,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						newSynchronisationJob.put("TargetFolder", resultData.getStringExtra("TargetFolder"));
 						newSynchronisationJob.put("DeletionPolicy", resultData.getIntExtra("DeletionPolicy", 0));
 
-						Log.i("STORAGE", "JSON2: " + newSynchronisationJob.toString());
-
 						// Remove the existing job
 						synchronisationArray.remove(resultData.getIntExtra("ID", -1));
 
@@ -209,7 +203,8 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						// Update shared preferences
 						myPrefsEdit.putString("Synchronisations", synchronisationArray.toString());
 						myPrefsEdit.commit();
-					} catch (Exception e)
+					}
+					catch (Exception e)
 					{
 						e.printStackTrace();
 					}
@@ -284,7 +279,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 	@Override
 	public void OnSynchronisationFailed(final String error)
 	{
-		Log.i("STORAGE","OnSynchronisationFailed called (error: "+error+")");
 		runOnUiThread(new Runnable()
 		{
 			@Override
@@ -321,7 +315,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					default:
 					{
 						syncLoader.ShowLoaderWithIcon("Unknown error", R.drawable.ic_highlight_off_black_24dp, "An unknown error occurred during the synchronisation.");
-						Log.i("STORAGE", "Unknown error: "+error);
 					}
 				}
 
@@ -389,7 +382,6 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 							{
 								// Stop the ongoing task
 								synchronisationTask.cancel(true);
-								Log.i("STORAGE", "User cancelled the synchronisation during estimation.");
 
 								// Close the loader
 								//syncLoader.HideLoader();
@@ -399,22 +391,25 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						// Fetch the selected synchronisation details
 						JSONObject targetSynchronisation = synchronisationArray.getJSONObject(position);
 
-						Log.i("STORAGE", "JSON contents: '" + targetSynchronisation + "'.");
-
+						// Authentication
 						sourceAuthentication = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? null : GetSMBCredentials(targetSynchronisation.getString("SourceSMBShare")));
 						targetAuthentication = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? null : GetSMBCredentials(targetSynchronisation.getString("TargetSMBShare")));
 
+						// Folders
 						sourceFolder = (targetSynchronisation.getString("SourceType").equals("LOCAL") ? targetSynchronisation.getString("SourceFolder") : GetSMBAddress(targetSynchronisation.getString("SourceSMBShare")) + targetSynchronisation.getString("SourceFolder"));
 						targetFolder = (targetSynchronisation.getString("TargetType").equals("LOCAL") ? targetSynchronisation.getString("TargetFolder") : GetSMBAddress(targetSynchronisation.getString("TargetSMBShare")) + targetSynchronisation.getString("TargetFolder"));
 
+						// Miscellaneous
 						deletionPolicy = targetSynchronisation.getInt("DeletionPolicy");
 
-						synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, deletionPolicy, false);
+						// Run a task to perform the synchronisation
+						synchronisationTask = new SynchronisationASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, deletionPolicy, false);
 						synchronisationTask.callingActivityInterface = MainActivity.this;
 						synchronisationTask.execute();
 						synchronisationStart = System.currentTimeMillis() / 1000L;
 
-					} catch (Exception e)
+					}
+					catch (Exception e)
 					{
 						e.printStackTrace();
 					}
@@ -467,18 +462,19 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 			// Obtain the available SMB credentials
 			JSONArray SMBShares = new JSONArray(myPreferences.getString("SMBShares", "[]"));
 
+			// Loop through all SMB shares
 			for (int i = 0; i < SMBShares.length(); i++)
 			{
+				// Check if the current share is the one being looked for
 				JSONObject SMBShare = SMBShares.getJSONObject(i);
-
-				Log.i("STORAGE", "Comparing '" + SMBShare.getString("Title") + "' and '" + SMBShareTitle + "'.");
-
 				if (SMBShare.getString("Title").equals(SMBShareTitle))
 				{
+					// Return the share's credentials
 					return new NtlmPasswordAuthentication(SMBShare.getString("Domain"), SMBShare.getString("Username"), SMBShare.getString("Password"));
 				}
 			}
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -493,10 +489,13 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 			// Obtain the available SMB credentials
 			JSONArray SMBShares = new JSONArray(myPreferences.getString("SMBShares", "[]"));
 
+			// Loop through all SMB shares
 			for (int i = 0; i < SMBShares.length(); i++)
 			{
+				// Check if the current share is the one being looked for
 				if (SMBShares.getJSONObject(i).getString("Title").equals(SMBShareTitle))
 				{
+					// Return the share's address
 					return SMBShares.getJSONObject(i).getString("Address");
 				}
 			}
@@ -531,7 +530,8 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 					leftHandSide = lhs.getString(attributeToSort);
 					rightHandSide = rhs.getString(attributeToSort);
 
-				} catch (JSONException e)
+				}
+				catch (JSONException e)
 				{
 					e.printStackTrace();
 				}
@@ -545,10 +545,9 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 		return new JSONArray(jsonList);
 	}
 
+	// Function called when a synchronisation completes
 	public void OnSynchronisationComplete(boolean performTransfer, long addedFileSize, ArrayList<AnalysedFile> addedFileList, long updatedFileSize, ArrayList<AnalysedFile> updatedFileList, long deletedFileSize, ArrayList<AnalysedFile> deletedFileList)
 	{
-		Log.i("STORAGE", "OnSynchronisationComplete");
-
 		// Check if a transfer was being performed
 		if(!performTransfer)
 		{
@@ -575,14 +574,14 @@ public class MainActivity extends AppCompatActivity implements ContextualASyncTa
 						{
 							// Stop the ongoing task
 							synchronisationTask.cancel(true);
-							Log.i("STORAGE", "User cancelled the synchronisation during transfer.");
 
 							// Close the loader
 							//syncLoader.HideLoader();
 						}
 					});
 
-					synchronisationTask = new ContextualASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, deletionPolicy, true);
+					// Start a synchronisation task
+					synchronisationTask = new SynchronisationASyncTask(MainActivity.this, sourceFolder, sourceAuthentication, targetFolder, targetAuthentication, deletionPolicy, true);
 					synchronisationTask.callingActivityInterface = MainActivity.this;
 					synchronisationTask.execute();
 					synchronisationStart = System.currentTimeMillis() / 1000L;

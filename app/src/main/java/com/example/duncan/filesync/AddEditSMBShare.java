@@ -47,6 +47,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		// Clicking the back button at the top-left
 		if (item.getItemId() == android.R.id.home)
 		{
 			// Finish the activity, returning to the calling one
@@ -128,7 +129,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 
-        // Check if an SMB share is being edited
+        // Check if an existing SMB share is being edited
         Intent addSMBShareIntent = getIntent();
         if(addSMBShareIntent.hasExtra("ID"))
         {
@@ -248,13 +249,13 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
                 ValidatePassword();
                 ValidateSMBAddress();
 
-                // Check if any errors are on display
-                if(titleEditTextContainer.isErrorEnabled() || domainEditTextContainer.isErrorEnabled() || usernameEditTextContainer.isErrorEnabled() || passwordEditTextContainer.isErrorEnabled() || addressEditTextContainer.isErrorEnabled())
-                {
-                    // If so, notify the user
-                    Log.i("STORAGE", "ERROR ON DISPLAY");
-                }
-                else
+                // Ensure there are no errors on display
+                if(		!titleEditTextContainer.isErrorEnabled() &&
+						!domainEditTextContainer.isErrorEnabled() &&
+						!usernameEditTextContainer.isErrorEnabled() &&
+						!passwordEditTextContainer.isErrorEnabled() &&
+						!addressEditTextContainer.isErrorEnabled()
+				)
                 {
 					// Initialise & show a loader
 					testSMBShareLoader = new Loader(AddEditSMBShare.this, getLayoutInflater());
@@ -269,7 +270,6 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 						{
 							// Stop the ongoing task
 							testSMBShare.cancel(true);
-							Log.i("STORAGE", "User cancelled the SMB share test.");
 
 							// Re-enable the form
 							ToggleFormInputs(true);
@@ -293,6 +293,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
         });
     }
 
+    // Validate the title of an SMB share
     private void ValidateTitle()
     {
         // Validate the input
@@ -328,51 +329,59 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 				e.printStackTrace();
 			}
 
+			// If no duplicate SMB share titles were found
 			if(!foundDuplicateTitle)
 			{
+				// Hide any errors (allows the form to be submitted)
 				titleEditTextContainer.setError("");
 				titleEditTextContainer.setErrorEnabled(false);
 			}
         }
     }
 
+	// Validate the username of an SMB share
     private void ValidateUsername()
     {
-        // Validate the input
+        // No value entered
         if(usernameEditText.getText().toString().length() <= 0 || usernameEditText.getText().toString().equals(""))
         {
             usernameEditTextContainer.setError("Please enter a username.");
         }
         else
         {
+			// Hide any errors (allows the form to be submitted)
             usernameEditTextContainer.setError("");
             usernameEditTextContainer.setErrorEnabled(false);
         }
     }
 
+	// Validate the password of an SMB share
 	private void ValidatePassword()
 	{
-		// Validate the input
+		// No value entered
 		if(passwordEditText.getText().toString().length() <= 0 || passwordEditText.getText().toString().equals(""))
 		{
 			passwordEditTextContainer.setError("Please enter a password.");
 		}
 		else
 		{
+			// Hide any errors (allows the form to be submitted)
 			passwordEditTextContainer.setError("");
 			passwordEditTextContainer.setErrorEnabled(false);
 		}
 	}
 
+	// Validate the address of an SMB share
 	private void ValidateSMBAddress()
 	{
-		// Validate the input
+		// No value entered
 		if(addressEditText.getText().toString().length() <= 0 || addressEditText.getText().toString().equals(""))
 		{
 			addressEditTextContainer.setError("Please enter an SMB address.");
 		}
 		else
 		{
+			// Hide any errors (allows the form to be submitted)
 			addressEditTextContainer.setError("");
 			addressEditTextContainer.setErrorEnabled(false);
 		}
@@ -393,6 +402,7 @@ public class AddEditSMBShare extends AppCompatActivity implements TestSMBShare.T
 	}
 
 	@Override
+	// Function called when testing of an SMB share returns
 	public void TestCompleted(String testResult)
 	{
 		// Hide the loader
